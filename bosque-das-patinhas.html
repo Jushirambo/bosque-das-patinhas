@@ -3,9 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Town 77 — versão jogável no navegador (arquivo único)</title>
-<meta name="description" content="Adaptação não oficial para navegador do jogo de tabuleiro Town 77 (Oink Games), feita com HTML, CSS e JavaScript puros.">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='18' fill='%23f7f2e8'/><path d='M50 12 L88 44 L12 44 Z' fill='%233f9a5c'/><rect x='22' y='44' width='56' height='42' fill='%23e0524b'/></svg>">
+<title>Bosque das Patinhas — jogo de bichinhos (arquivo único)</title>
+<meta name="description" content="Um jogo de lógica original com bichinhos fofinhos, feito em HTML, CSS e JavaScript puros.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='24' fill='%23fff6df'/><circle cx='50' cy='57' r='24' fill='%23ef6b78'/><circle cx='25' cy='28' r='11' fill='%23ef6b78'/><circle cx='48' cy='20' r='11' fill='%23ef6b78'/><circle cx='74' cy='29' r='11' fill='%23ef6b78'/></svg>">
 <style>
 :root {
   --cream: #f7f2e8;
@@ -184,9 +184,9 @@ h1, h2, h3 { margin: 0; font-weight: 700; letter-spacing: -.01em; }
 
 .cell.conflict { box-shadow: inset 0 0 0 2.5px var(--danger); }
 
-.cell.ghost .house-svg { opacity: .42; }
+.cell.ghost .animal-svg { opacity: .42; }
 
-.cell .house-svg { width: 100%; height: 100%; display: block; }
+.cell .animal-svg { width: 100%; height: 100%; display: block; }
 
 .cell.starter::after {
   content: "";
@@ -333,7 +333,7 @@ h1, h2, h3 { margin: 0; font-weight: 700; letter-spacing: -.01em; }
   outline: 2px solid transparent;
 }
 
-.tile .house-svg { width: 100%; height: 100%; }
+.tile .animal-svg { width: 100%; height: 100%; }
 
 .tile:not(.dead):hover { transform: translateY(-3px); }
 
@@ -529,6 +529,101 @@ footer.foot {
   text-align: center;
 }
 
+/* ------------------------------------------------ rebrand: bosque fofo */
+:root {
+  --cream: #fff9ed;
+  --cream-2: #f7ecd6;
+  --card: rgba(255, 254, 249, .94);
+  --ink: #413646;
+  --ink-soft: #786c7b;
+  --line: #eadcc5;
+  --accent: #e06684;
+  --accent-soft: #ffe3ea;
+  --danger: #c95663;
+  --shadow-sm: 0 2px 4px rgba(79, 58, 67, .08), 0 5px 14px rgba(79, 58, 67, .06);
+  --shadow-md: 0 12px 35px rgba(79, 58, 67, .15);
+}
+
+body {
+  background:
+    radial-gradient(circle at 8% 12%, rgba(255,255,255,.9) 0 5px, transparent 6px),
+    radial-gradient(circle at 92% 18%, rgba(255,255,255,.8) 0 8px, transparent 9px),
+    linear-gradient(180deg, #dff3df 0 22%, #f7efcf 22% 100%);
+  background-attachment: fixed;
+}
+
+body::before, body::after {
+  content: "";
+  position: fixed;
+  z-index: -1;
+  border-radius: 50%;
+  filter: blur(1px);
+  opacity: .6;
+}
+body::before { width: 280px; height: 280px; left: -90px; bottom: -80px; background: #b9dfbd; }
+body::after { width: 220px; height: 220px; right: -60px; bottom: -40px; background: #cfe8b5; }
+
+.topbar { border-bottom: 2px dashed rgba(116, 151, 105, .25); }
+.brand { align-items: center; }
+.brand h1 {
+  font-family: "Trebuchet MS", ui-rounded, system-ui, sans-serif;
+  color: #5d7657;
+  font-size: clamp(22px, 4vw, 31px);
+  letter-spacing: -.035em;
+  text-transform: none;
+  position: relative;
+}
+.brand h1::before { content: "🐾"; font-size: .75em; margin-right: 8px; }
+.brand .tag { color: #9b7181; letter-spacing: .1em; }
+
+.btn { border-width: 2px; box-shadow: var(--shadow-sm); }
+.btn-primary { background: linear-gradient(135deg, #e66f8c, #d65c7b); border-color: #d65c7b; }
+.btn-primary:hover { background: #ca5170; }
+
+.board-frame {
+  background: #fffaf0;
+  border: 3px solid #fff;
+  outline: 2px solid #d6c79f;
+  box-shadow: 0 16px 40px rgba(83, 95, 61, .17);
+}
+.board {
+  padding: 5px;
+  border-radius: 13px;
+  background: linear-gradient(135deg, #b9d99b, #cfe5ae);
+}
+.cell {
+  border-radius: 13px;
+  background: rgba(255, 251, 224, .46);
+  border: 1.5px dashed rgba(99, 126, 78, .28);
+}
+.cell:nth-child(3n) { background: rgba(255, 244, 205, .52); }
+.cell.filled { border-color: rgba(87, 105, 69, .17); background: #fffdf6; }
+.cell.empty.legal { background: #fff2b9; border-color: #dd9d55; box-shadow: inset 0 0 0 2px rgba(255,255,255,.6); }
+.cell.empty.legal:hover { background: #ffe59a; box-shadow: 0 0 0 4px rgba(229, 149, 82, .2); }
+.cell .animal-svg { width: 94%; height: 94%; display: block; filter: drop-shadow(0 2px 1px rgba(65,54,70,.12)); }
+.cell.ghost .animal-svg { opacity: .46; }
+
+.panel { border: 2px solid rgba(234, 220, 197, .8); }
+.panel h2, .hand-head h2 { color: #8a7588 !important; }
+.players li, .notice, .ranking li { background: #fff8e9; }
+.players li.active, .ranking li.winner { background: #ffe6ed; }
+.tile { border-radius: 16px; border-width: 2px; }
+.tile.selected { outline-color: #df6987; box-shadow: 0 9px 20px rgba(224, 102, 132, .25); }
+.tile .animal-svg { filter: drop-shadow(0 2px 1px rgba(65,54,70,.12)); }
+
+.modal-backdrop { background: rgba(73, 69, 77, .48); }
+.modal { border: 3px solid #fff; outline: 2px solid #eadcc5; }
+.modal h2 { font-family: "Trebuchet MS", ui-rounded, system-ui, sans-serif; color: #5d7657; }
+.legend i { border-radius: 50%; box-shadow: inset 0 0 0 1px rgba(65,54,70,.13); }
+footer.foot::before { content: "🐰  🐱  🐻  🦊  🐼  🐶  🐹"; display: block; margin-bottom: 7px; letter-spacing: .3em; font-size: 17px; }
+
+@media (max-width: 620px) {
+  .brand { align-items: flex-start; flex-direction: column; gap: 1px; }
+  .brand .tag { margin-left: 35px; }
+  .board { gap: 2px; padding: 3px; }
+  .cell { border-radius: 9px; }
+}
+
 </style>
 </head>
 <body>
@@ -536,8 +631,8 @@ footer.foot {
 
   <header class="topbar">
     <div class="brand">
-      <h1>Town 77</h1>
-      <span class="tag">jogo de tabuleiro · versão web</span>
+      <h1>Bosque das Patinhas</h1>
+      <span class="tag">jogo de lógica · bichinhos fofinhos</span>
     </div>
     <div class="toolbar">
       <button class="btn" id="btn-rules" type="button">Regras</button>
@@ -548,16 +643,16 @@ footer.foot {
 
   <main class="layout">
 
-    <section class="board-area" aria-label="Tabuleiro da cidade">
+    <section class="board-area" aria-label="Tabuleiro do bosque">
       <div class="board-frame">
-        <div class="board" id="board" role="grid" aria-label="Cidade 7 por 7"></div>
+        <div class="board" id="board" role="grid" aria-label="Bosque 7 por 7"></div>
         <svg id="svg-defs" width="0" height="0" aria-hidden="true" focusable="false"
              style="position:absolute;width:0;height:0;overflow:hidden"></svg>
       </div>
       <div class="board-caption">
-        <span><b id="fill-count">1</b>/49 casas construídas</span>
-        <span>Saco: <b id="bag-count">0</b></span>
-        <span>Regra: nada de mesma <b>cor</b> ou <b>casa</b> na linha/coluna</span>
+        <span><b id="fill-count">1</b>/49 bichinhos acolhidos</span>
+        <span>Cestinha: <b id="bag-count">0</b></span>
+        <span>Regra: sem repetir <b>cor</b> ou <b>espécie</b> na linha/coluna</span>
       </div>
       <div class="legend" id="legend"></div>
     </section>
@@ -580,16 +675,16 @@ footer.foot {
       <section class="panel">
         <div class="hand-head">
           <h2 style="font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-soft)">Mão</h2>
-          <span class="hint" id="hand-hint">clique numa peça e depois numa casa</span>
+          <span class="hint" id="hand-hint">clique num bichinho e depois numa clareira</span>
         </div>
         <div class="hand" id="hand"></div>
       </section>
 
       <section class="panel actions" id="actions">
-        <div id="action-notice" class="notice">Escolha uma peça da mão.</div>
+        <div id="action-notice" class="notice">Escolha um bichinho da mão.</div>
         <div class="draw-slots" id="draw-slots" hidden>
-          <button class="btn btn-primary" id="btn-draw" type="button">Comprar peça</button>
-          <button class="btn" id="btn-skip" type="button">Não comprar</button>
+          <button class="btn btn-primary" id="btn-draw" type="button">Pegar bichinho</button>
+          <button class="btn" id="btn-skip" type="button">Não pegar</button>
         </div>
         <button class="btn btn-ghost" id="btn-auto" type="button">Jogar automaticamente</button>
       </section>
@@ -602,8 +697,7 @@ footer.foot {
   </main>
 
   <footer class="foot">
-    Adaptação não oficial, sem fins comerciais, para estudo de programação.
-    “Town 77” é um jogo de Christoph Cantzler &amp; Anja Wrede publicado pela Oink Games — todos os direitos sobre o jogo original pertencem aos seus autores e editora.
+    Um jogo independente com código e arte vetorial originais. Feito com carinho para jogar no navegador.
   </footer>
 </div>
 
@@ -611,25 +705,24 @@ footer.foot {
 <div class="modal-backdrop" id="modal-rules" hidden>
   <div class="modal" role="dialog" aria-modal="true" aria-labelledby="rules-title">
     <h2 id="rules-title">Como jogar</h2>
-    <p class="sub">Regras do Town 77, em resumo.</p>
+    <p class="sub">Ajude os bichinhos a encontrar seu cantinho no bosque.</p>
     <div class="rules">
-      <p>Há <b>49 peças</b>: cada uma é uma combinação única de uma <b>casa</b> (7 estilos) e de uma <b>cor</b> (7 cores com estampas diferentes). Todas as peças juntas formam uma única cidade <b>7×7</b>.</p>
+      <p>Há <b>49 bichinhos</b>: cada um combina uma <b>espécie</b> (7 tipos) e uma <b>cor</b> (7 cores estampadas). Juntos, eles formam um bosque <b>7×7</b>.</p>
       <ul>
-        <li><b>Começo:</b> uma peça é sorteada e colocada na célula superior esquerda. Cada jogador recebe <b>4 peças</b> (o resto vai para o saco).</li>
-        <li><b>Na sua vez:</b> coloque 1 peça da mão numa casa vazia que seja <b>vizinha</b> (por um lado) de alguma peça já construída.</li>
-        <li><b>Restrição:</b> a peça não pode ter a mesma <b>cor</b> nem a mesma <b>casa</b> de outra peça na mesma <b>linha</b> ou na mesma <b>coluna</b>.</li>
-        <li><b>Comprar ou não:</b> depois de construir, você pode comprar 1 peça do saco. Se não comprar, seu limite de mão cai para o tamanho atual e <b>nunca mais sobe</b>.</li>
-        <li><b>Saídas:</b> quem coloca a última peça da mão sai (com zero). Quem não tem nenhuma jogada possível também sai, levando as peças que sobraram.</li>
-        <li><b>Fim:</b> quando todos saíram (ou o tabuleiro enche). Vence quem tiver <b>menos peças na mão</b>; empate vai para quem jogou por último.</li>
-        <li><b>Solo:</b> jogue sozinho tentando zerar a mão; o placar mostra quantas peças sobraram.</li>
+        <li><b>Começo:</b> um bichinho é sorteado para a primeira clareira. Cada jogador recebe <b>4 bichinhos</b> (o restante fica na cestinha).</li>
+        <li><b>Na sua vez:</b> coloque 1 bichinho da mão numa clareira vazia <b>vizinha</b> (por um lado) de outro bichinho.</li>
+        <li><b>Restrição:</b> o bichinho não pode ter a mesma <b>cor</b> nem a mesma <b>espécie</b> de outro bichinho na mesma <b>linha</b> ou na mesma <b>coluna</b>.</li>
+        <li><b>Comprar ou não:</b> depois de acolher, você pode pegar 1 bichinho da cestinha. Se não comprar, seu limite de mão cai para o tamanho atual e <b>nunca mais sobe</b>.</li>
+        <li><b>Saídas:</b> quem coloca o último bichinho da mão sai (com zero). Quem não tem jogada possível também sai, levando os bichinhos que sobraram.</li>
+        <li><b>Fim:</b> quando todos saíram (ou o bosque fica cheio). Vence quem tiver <b>menos bichinhos na mão</b>; empate vai para quem jogou por último.</li>
+        <li><b>Solo:</b> jogue sozinho tentando zerar a mão; o placar mostra quantos bichinhos sobraram.</li>
       </ul>
       <h3>Atalhos</h3>
       <ul>
-        <li><b>1…7</b> seleciona a peça correspondente da mão · <b>Esc</b> desmarca · passe o mouse numa casa para ver um “fantasma” da peça e os conflitos.</li>
+        <li><b>1…7</b> seleciona o bichinho correspondente da mão · <b>Esc</b> desmarca · passe o mouse numa clareira para ver uma prévia do bichinho e os conflitos.</li>
       </ul>
-      <p class="credit">
-        Jogo original: <b>Town 77</b> (2023), design de Christoph Cantzler &amp; Anja Wrede, arte de Jun Sasaki, publicado pela Oink Games.
-        Esta é uma adaptação não oficial para navegador, com regras e arte recriadas de forma independente, sem qualquer vínculo com a editora.
+<p class="credit">
+        <b>Bosque das Patinhas</b> é um projeto independente com nome, identidade visual, textos e ilustrações vetoriais originais. Código licenciado sob MIT.
       </p>
     </div>
     <div class="modal-actions" style="margin-top:14px">
@@ -683,18 +776,17 @@ footer.foot {
 <!-- js/engine.js -->
 <script>
 /*
- * Town 77 (versão web) — motor de regras
+ * Bosque das Patinhas — motor de regras
  * Implementação independente e não oficial, feita apenas para fins de estudo.
- * Jogo original: "Town 77" (2023) de Christoph Cantzler & Anja Wrede, publicado pela Oink Games.
  *
  * Regras implementadas
  * --------------------
- * - 49 peças: todas as combinações de 7 casas x 7 cores (uma de cada).
- * - Um único tabuleiro 7x7 é construído por todos os jogadores em conjunto.
+ * - 49 peças: todas as combinações de 7 espécies x 7 cores (uma de cada).
+ * - Um único tabuleiro 7x7 é ocupado por todos os jogadores em conjunto.
  * - A peça inicial é sorteada e vai para a célula superior esquerda.
  * - Em seu turno o jogador coloca uma peça da mão em uma célula vazia que seja
  *   ortogonalmente vizinha de uma peça já colocada. A peça não pode repetir a
- *   cor nem a casa de nenhuma peça na mesma LINHA nem na mesma COLUNA.
+ *   cor nem a espécie de nenhuma peça na mesma LINHA nem na mesma COLUNA.
  * - Depois de colocar, o jogador escolhe comprar uma peça do saco ou não.
  *   Ao não comprar, o limite de peças na mão cai permanentemente.
  * - Quem fica sem jogada possível é eliminado (leva as peças que restaram).
@@ -706,7 +798,7 @@ footer.foot {
   'use strict';
   var api = factory();
   if (typeof module === 'object' && module.exports) module.exports = api;
-  if (root) root.TownEngine = api;
+  if (root) root.PatinhasEngine = api;
 })(typeof globalThis !== 'undefined' ? globalThis : this, function () {
   'use strict';
 
@@ -714,23 +806,23 @@ footer.foot {
   var N_TILES = SIZE * SIZE;
 
   var COLORS = [
-    { id: 'vermelho', name: 'Vermelho', hex: '#e0524b', ink: '#5f1714', pattern: 'dots' },
-    { id: 'laranja', name: 'Laranja', hex: '#ef8b3c', ink: '#6d3a0d', pattern: 'diagonals' },
-    { id: 'amarelo', name: 'Amarelo', hex: '#e9c53f', ink: '#6a5410', pattern: 'stripes' },
-    { id: 'verde', name: 'Verde', hex: '#4fa564', ink: '#1b4a2b', pattern: 'grid' },
-    { id: 'azul', name: 'Azul', hex: '#3f7cc9', ink: '#14315c', pattern: 'rings' },
-    { id: 'roxo', name: 'Roxo', hex: '#8a63c4', ink: '#38205e', pattern: 'cross' },
-    { id: 'rosa', name: 'Rosa', hex: '#d75f96', ink: '#6b1a41', pattern: 'waves' }
+    { id: 'morango', name: 'Morango', hex: '#ef6b78', ink: '#6b2631', pattern: 'hearts' },
+    { id: 'tangerina', name: 'Tangerina', hex: '#f59a4a', ink: '#6d3a0d', pattern: 'dots' },
+    { id: 'mel', name: 'Mel', hex: '#e9bd45', ink: '#655014', pattern: 'stars' },
+    { id: 'menta', name: 'Menta', hex: '#67b985', ink: '#22583a', pattern: 'leaves' },
+    { id: 'ceu', name: 'Céu', hex: '#64a9d9', ink: '#214f70', pattern: 'clouds' },
+    { id: 'lavanda', name: 'Lavanda', hex: '#9b82d1', ink: '#49366e', pattern: 'flowers' },
+    { id: 'pitaya', name: 'Pitaya', hex: '#df79ad', ink: '#6b2d4c', pattern: 'waves' }
   ];
 
   var SHAPES = [
-    { id: 'chale', name: 'Chalé' },
-    { id: 'cupula', name: 'Cúpula' },
-    { id: 'piramide', name: 'Pirâmide' },
-    { id: 'predio', name: 'Prédio' },
-    { id: 'castelo', name: 'Castelo' },
-    { id: 'torre', name: 'Torre' },
-    { id: 'tambor', name: 'Tambor' }
+    { id: 'coelho', name: 'Coelhinho' },
+    { id: 'gato', name: 'Gatinho' },
+    { id: 'urso', name: 'Ursinho' },
+    { id: 'raposa', name: 'Raposinha' },
+    { id: 'panda', name: 'Pandinha' },
+    { id: 'cachorro', name: 'Cachorrinho' },
+    { id: 'hamster', name: 'Hamster' }
   ];
 
   var COLUMN_LABELS = 'ABCDEFG';
@@ -991,7 +1083,7 @@ footer.foot {
     var at = p.hand.indexOf(tile);
     if (at === -1) return { ok: false, reason: 'Essa peça não está na sua mão.' };
     if (!isLegal(state, tile, r, c)) {
-      return { ok: false, reason: 'Jogada inválida: mesma cor ou casa na linha/coluna.' };
+      return { ok: false, reason: 'Jogada inválida: mesma cor ou espécie na linha/coluna.' };
     }
 
     p.hand.splice(at, 1);
@@ -1002,7 +1094,7 @@ footer.foot {
 
     pushLog(state, {
       kind: 'place', seat: p.seat,
-      text: p.name + ' construiu ' + tileLabel(tile) + ' em ' + cellLabel(idx(r, c)) + '.'
+      text: p.name + ' acolheu ' + tileLabel(tile) + ' em ' + cellLabel(idx(r, c)) + '.'
     });
 
     if (p.hand.length === 0) {
@@ -1132,10 +1224,10 @@ footer.foot {
 <!-- js/ai.js -->
 <script>
 /*
- * Town 77 (versão web) — inteligência artificial.
+ * Bosque das Patinhas — inteligência artificial.
  *
  * A IA foi calibrada por simulação (veja tools/tune.mjs). A descoberta principal:
- * como o tabuleiro é comum a todos, construir de forma a reduzir as opções dos
+ * como o tabuleiro é comum a todos, acolher de forma a reduzir as opções dos
  * adversários (bloqueio) rende mais do que apenas manter a própria flexibilidade.
  * O segundo fator decisivo é parar de comprar peças na hora certa (~metade do
  * tabuleiro preenchido): comprar tarde demais deixa a mão cheia quando os
@@ -1143,10 +1235,10 @@ footer.foot {
  */
 (function (root, factory) {
   'use strict';
-  var E = root && root.TownEngine ? root.TownEngine : require('./engine.js');
+  var E = root && root.PatinhasEngine ? root.PatinhasEngine : require('./engine.js');
   var api = factory(E);
   if (typeof module === 'object' && module.exports) module.exports = api;
-  if (root) root.TownAI = api;
+  if (root) root.PatinhasAI = api;
 })(typeof globalThis !== 'undefined' ? globalThis : this, function (E) {
   'use strict';
 
@@ -1200,11 +1292,11 @@ footer.foot {
 
     if (cfg.block > 0) score -= cfg.block * opponentFlex(sim, me) * 0.35;
 
-    // Peças com poucas casas disponíveis devem ser construídas logo
+    // Peças com poucas clareiras disponíveis devem ser acolhidos logo
     var cellsNow = E.legalCells(state, move.tile).length;
     score += cfg.wFew * Math.max(0, 8 - cellsNow);
 
-    // Desempate leve: prefere o centro, que mantém mais casas vizinhas abertas
+    // Desempate leve: prefere o centro, que mantém mais clareiras vizinhas abertas
     var r = E.rowOf(move.cell), c = E.colOf(move.cell);
     score += (3 - Math.abs(3 - r)) * 0.15 + (3 - Math.abs(3 - c)) * 0.15;
 
@@ -1230,7 +1322,7 @@ footer.foot {
   }
 
   /**
-   * Compra uma peça depois de construir?
+   * Compra uma peça depois de acolher?
    * Comprar mantém opções; parar de comprar trava o limite de mão e é o caminho
    * para zerar. O limiar calibrado fica perto da metade do tabuleiro.
    */
@@ -1265,192 +1357,134 @@ footer.foot {
 <!-- js/pieces.js -->
 <script>
 /*
- * Town 77 (versão web) — arte das peças (SVG gerado em tempo de execução).
- * Sete estilos de casa x sete cores/estampas, desenhados do zero.
+ * Bosque das Patinhas — bichinhos vetoriais gerados em tempo de execução.
+ * Sete espécies x sete cores/estampas, com arte original deste projeto.
  */
 (function (root, factory) {
   'use strict';
   var api = factory();
   if (typeof module === 'object' && module.exports) module.exports = api;
-  if (root) root.TownPieces = api;
+  if (root) root.PatinhasPieces = api;
 })(typeof globalThis !== 'undefined' ? globalThis : this, function () {
   'use strict';
 
   var COLORS = [
-    { id: 'vermelho', hex: '#e0524b', pattern: 'dots' },
-    { id: 'laranja', hex: '#ea8433', pattern: 'diagonals' },
-    { id: 'amarelo', hex: '#e2b52c', pattern: 'stripes' },
-    { id: 'verde', hex: '#3f9a5c', pattern: 'grid' },
-    { id: 'azul', hex: '#3572bd', pattern: 'rings' },
-    { id: 'roxo', hex: '#8360c0', pattern: 'cross' },
-    { id: 'rosa', hex: '#d15a90', pattern: 'waves' }
+    { id: 'morango', name: 'Morango', hex: '#ef6b78', pattern: 'hearts' },
+    { id: 'tangerina', name: 'Tangerina', hex: '#f59a4a', pattern: 'dots' },
+    { id: 'mel', name: 'Mel', hex: '#e9bd45', pattern: 'stars' },
+    { id: 'menta', name: 'Menta', hex: '#67b985', pattern: 'leaves' },
+    { id: 'ceu', name: 'Céu', hex: '#64a9d9', pattern: 'clouds' },
+    { id: 'lavanda', name: 'Lavanda', hex: '#9b82d1', pattern: 'flowers' },
+    { id: 'pitaya', name: 'Pitaya', hex: '#df79ad', pattern: 'waves' }
   ];
 
   function clamp(v) { return Math.max(0, Math.min(255, Math.round(v))); }
-
   function hexToRgb(hex) {
     var h = hex.replace('#', '');
     return [parseInt(h.substr(0, 2), 16), parseInt(h.substr(2, 2), 16), parseInt(h.substr(4, 2), 16)];
   }
-
   function mix(hex, target, amount) {
     var a = hexToRgb(hex), b = hexToRgb(target);
     return 'rgb(' + clamp(a[0] + (b[0] - a[0]) * amount) + ',' +
       clamp(a[1] + (b[1] - a[1]) * amount) + ',' +
       clamp(a[2] + (b[2] - a[2]) * amount) + ')';
   }
-
   function darken(hex, amount) { return mix(hex, '#000000', amount); }
   function lighten(hex, amount) { return mix(hex, '#ffffff', amount); }
 
-  /* ------------------------------------------------------- padrões de cor */
-
   function patternBody(kind) {
     switch (kind) {
-      case 'dots':
-        return '<circle cx="3" cy="3" r="1.5"/><circle cx="9" cy="9" r="1.5"/>';
-      case 'diagonals':
-        return '<path d="M-2,14 L14,-2 M-2,2 L2,-2 M10,14 L14,10"/>';
-      case 'stripes':
-        return '<path d="M0,3 H12 M0,9 H12"/>';
-      case 'grid':
-        return '<path d="M0,6 H12 M6,0 V12"/>';
-      case 'rings':
-        return '<circle cx="6" cy="6" r="3.2"/>';
-      case 'cross':
-        return '<path d="M1,1 L11,11 M11,1 L1,11"/>';
-      case 'waves':
-        return '<path d="M0,6 Q3,2 6,6 T12,6"/>';
-      default:
-        return '';
+      case 'hearts': return '<path d="M6 10 C2 7 1 4 3 3 C4.5 2 6 3.5 6 4.5 C6 3.5 7.5 2 9 3 C11 4 10 7 6 10Z"/>';
+      case 'dots': return '<circle cx="3" cy="3" r="1.4"/><circle cx="9" cy="9" r="1.4"/>';
+      case 'stars': return '<path d="M6 1.5 L7.3 4.4 L10.5 4.7 L8 6.8 L8.8 10 L6 8.3 L3.2 10 L4 6.8 L1.5 4.7 L4.7 4.4Z"/>';
+      case 'leaves': return '<path d="M2 8 Q2 3 7 3 Q7 8 2 8 M7 10 Q7 6 11 6 Q11 10 7 10"/>';
+      case 'clouds': return '<path d="M1 8 Q1 5 4 5 Q5 2 8 4 Q11 4 11 8Z"/>';
+      case 'flowers': return '<circle cx="6" cy="3.5" r="2"/><circle cx="8.5" cy="6" r="2"/><circle cx="6" cy="8.5" r="2"/><circle cx="3.5" cy="6" r="2"/>';
+      case 'waves': return '<path d="M0 6 Q3 2 6 6 T12 6"/>';
+      default: return '';
     }
   }
 
-  /** <defs> com as sete estampas — incluir uma vez na página. */
   function defs() {
-    return '<defs>' + COLORS.map(function (c, i) {
-      return '<pattern id="t77-pat-' + c.id + '" patternUnits="userSpaceOnUse" width="12" height="12" ' +
-        'patternTransform="scale(1.35)">' +
-        '<g fill="none" stroke="#ffffff" stroke-opacity="0.55" stroke-width="1.6" ' +
-        'stroke-linecap="round" fill="rgba(255,255,255,0.5)">' + patternBody(c.pattern) + '</g>' +
-        '</pattern>';
+    return '<defs>' + COLORS.map(function (c) {
+      return '<pattern id="patinhas-pat-' + c.id + '" patternUnits="userSpaceOnUse" width="12" height="12" patternTransform="scale(1.25)">' +
+        '<g fill="none" stroke="#fff" stroke-opacity=".44" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round">' +
+        patternBody(c.pattern) + '</g></pattern>';
     }).join('') + '</defs>';
   }
 
-  /* --------------------------------------------------------------- casas */
+  var COMMON_FACE =
+    '<circle cx="39" cy="51" r="3.2" fill="#3e3541"/><circle cx="61" cy="51" r="3.2" fill="#3e3541"/>' +
+    '<path d="M47 61 Q50 64 53 61" fill="none" stroke="#3e3541" stroke-width="2.4" stroke-linecap="round"/>' +
+    '<ellipse cx="50" cy="58" rx="3.2" ry="2.4" fill="#59434a"/>' +
+    '<ellipse cx="33" cy="60" rx="6" ry="3" fill="#f6a0a7" opacity=".6"/><ellipse cx="67" cy="60" rx="6" ry="3" fill="#f6a0a7" opacity=".6"/>';
 
-  var SHAPE_PATHS = [
-    // 0 — Chalé (telhado de duas águas)
-    '<path d="M50 6 L94 48 L6 48 Z" fill="__ROOF__"/>' +
-    '<rect x="16" y="48" width="68" height="44" fill="__BODY__"/>' +
-    '<rect x="16" y="48" width="68" height="44" fill="url(#t77-pat-__CID__)"/>' +
-    '<rect x="42" y="66" width="16" height="26" rx="7" fill="__DOOR__"/>' +
-    '<rect x="56" y="22" width="9" height="16" fill="__ROOF__"/>',
-
-    // 1 — Cúpula
-    '<path d="M14 52 A36 30 0 0 1 86 52 Z" fill="__ROOF__"/>' +
-    '<rect x="14" y="52" width="72" height="40" fill="__BODY__"/>' +
-    '<rect x="14" y="52" width="72" height="40" fill="url(#t77-pat-__CID__)"/>' +
-    '<path d="M50 20 L50 8" stroke="__ROOF__" stroke-width="4" stroke-linecap="round"/>' +
-    '<circle cx="50" cy="7" r="4.5" fill="__ROOF__"/>' +
-    '<path d="M38 92 v-18 a12 12 0 0 1 24 0 v18 z" fill="__DOOR__"/>',
-
-    // 2 — Pirâmide
-    '<path d="M50 4 L96 54 L4 54 Z" fill="__ROOF__"/>' +
-    '<rect x="18" y="54" width="64" height="38" fill="__BODY__"/>' +
-    '<rect x="18" y="54" width="64" height="38" fill="url(#t77-pat-__CID__)"/>' +
-    '<rect x="44" y="66" width="12" height="26" fill="__DOOR__"/>' +
-    '<rect x="24" y="62" width="12" height="10" rx="2" fill="__WINDOW__"/>' +
-    '<rect x="64" y="62" width="12" height="10" rx="2" fill="__WINDOW__"/>',
-
-    // 3 — Prédio (laje reta)
-    '<rect x="10" y="8" width="80" height="84" rx="4" fill="__BODY__"/>' +
-    '<rect x="10" y="8" width="80" height="84" rx="4" fill="url(#t77-pat-__CID__)"/>' +
-    '<rect x="6" y="4" width="88" height="11" rx="3" fill="__ROOF__"/>' +
-    '<g fill="__WINDOW__">' +
-    '<rect x="20" y="24" width="16" height="14" rx="2"/><rect x="42" y="24" width="16" height="14" rx="2"/>' +
-    '<rect x="64" y="24" width="16" height="14" rx="2"/><rect x="20" y="46" width="16" height="14" rx="2"/>' +
-    '<rect x="42" y="46" width="16" height="14" rx="2"/><rect x="64" y="46" width="16" height="14" rx="2"/>' +
-    '</g>' +
-    '<rect x="42" y="70" width="16" height="22" rx="3" fill="__DOOR__"/>',
-
-    // 4 — Castelo
-    '<rect x="6" y="26" width="20" height="66" fill="__ROOF__"/>' +
-    '<rect x="74" y="26" width="20" height="66" fill="__ROOF__"/>' +
-    '<rect x="24" y="44" width="52" height="48" fill="__BODY__"/>' +
-    '<rect x="24" y="44" width="52" height="48" fill="url(#t77-pat-__CID__)"/>' +
-    '<g fill="__ROOF__">' +
-    '<rect x="4" y="18" width="9" height="10"/><rect x="19" y="18" width="9" height="10"/>' +
-    '<rect x="72" y="18" width="9" height="10"/><rect x="87" y="18" width="9" height="10"/>' +
-    '<rect x="22" y="36" width="10" height="10"/><rect x="45" y="36" width="10" height="10"/>' +
-    '<rect x="68" y="36" width="10" height="10"/>' +
-    '</g>' +
-    '<path d="M38 92 v-16 a12 12 0 0 1 24 0 v16 z" fill="__DOOR__"/>',
-
-    // 5 — Torre
-    '<path d="M50 2 L88 30 L12 30 Z" fill="__ROOF__"/>' +
-    '<rect x="26" y="30" width="48" height="62" fill="__BODY__"/>' +
-    '<rect x="26" y="30" width="48" height="62" fill="url(#t77-pat-__CID__)"/>' +
-    '<circle cx="50" cy="50" r="8" fill="__WINDOW__"/>' +
-    '<rect x="43" y="68" width="14" height="24" rx="6" fill="__DOOR__"/>',
-
-    // 6 — Tambor (cilindro)
-    '<rect x="18" y="30" width="64" height="62" rx="10" fill="__BODY__"/>' +
-    '<rect x="18" y="30" width="64" height="62" rx="10" fill="url(#t77-pat-__CID__)"/>' +
-    '<ellipse cx="50" cy="30" rx="32" ry="13" fill="__ROOF__"/>' +
-    '<rect x="30" y="58" width="40" height="6" rx="3" fill="__WINDOW__" opacity="0.8"/>' +
-    '<path d="M40 92 v-14 a10 10 0 0 1 20 0 v14 z" fill="__DOOR__"/>'
+  var ANIMALS = [
+    // Coelho
+    '<ellipse cx="35" cy="22" rx="10" ry="24" fill="__LIGHT__" stroke="__OUT__" stroke-width="3"/><ellipse cx="65" cy="22" rx="10" ry="24" fill="__LIGHT__" stroke="__OUT__" stroke-width="3"/>' +
+    '<ellipse cx="35" cy="21" rx="4" ry="16" fill="#f5abb7"/><ellipse cx="65" cy="21" rx="4" ry="16" fill="#f5abb7"/>' +
+    '<circle cx="50" cy="56" r="32" fill="__BODY__" stroke="__OUT__" stroke-width="3"/>__PAT____FACE__' +
+    '<path d="M31 84 Q50 73 69 84" fill="__LIGHT__"/>',
+    // Gatinho
+    '<path d="M20 36 L25 7 L44 28 M80 36 L75 7 L56 28" fill="__LIGHT__" stroke="__OUT__" stroke-width="3" stroke-linejoin="round"/>' +
+    '<path d="M26 25 L28 14 L38 28 M74 25 L72 14 L62 28" fill="#f5abb7"/>' +
+    '<circle cx="50" cy="56" r="32" fill="__BODY__" stroke="__OUT__" stroke-width="3"/>__PAT____FACE__' +
+    '<path d="M25 57 H9 M26 64 L11 69 M75 57 H91 M74 64 L89 69" stroke="__OUT__" stroke-width="2" stroke-linecap="round"/>',
+    // Ursinho
+    '<circle cx="24" cy="25" r="14" fill="__BODY__" stroke="__OUT__" stroke-width="3"/><circle cx="76" cy="25" r="14" fill="__BODY__" stroke="__OUT__" stroke-width="3"/>' +
+    '<circle cx="24" cy="25" r="6" fill="__LIGHT__"/><circle cx="76" cy="25" r="6" fill="__LIGHT__"/>' +
+    '<circle cx="50" cy="56" r="32" fill="__BODY__" stroke="__OUT__" stroke-width="3"/>__PAT____FACE__' +
+    '<ellipse cx="50" cy="62" rx="13" ry="10" fill="__LIGHT__" opacity=".8"/>',
+    // Raposinha
+    '<path d="M16 38 L24 5 L45 30 M84 38 L76 5 L55 30" fill="__BODY__" stroke="__OUT__" stroke-width="3" stroke-linejoin="round"/>' +
+    '<circle cx="50" cy="56" r="32" fill="__BODY__" stroke="__OUT__" stroke-width="3"/>__PAT__' +
+    '<path d="M26 50 Q50 89 74 50 Q65 78 50 82 Q35 78 26 50" fill="__LIGHT__" opacity=".95"/>__FACE__',
+    // Pandinha
+    '<circle cx="24" cy="25" r="14" fill="#49404a"/><circle cx="76" cy="25" r="14" fill="#49404a"/>' +
+    '<circle cx="50" cy="56" r="32" fill="__LIGHT__" stroke="__OUT__" stroke-width="3"/>__PAT__' +
+    '<ellipse cx="38" cy="51" rx="8" ry="11" fill="#49404a" transform="rotate(18 38 51)"/><ellipse cx="62" cy="51" rx="8" ry="11" fill="#49404a" transform="rotate(-18 62 51)"/>__FACE__',
+    // Cachorrinho
+    '<ellipse cx="22" cy="38" rx="13" ry="25" fill="__OUT__" transform="rotate(23 22 38)"/><ellipse cx="78" cy="38" rx="13" ry="25" fill="__OUT__" transform="rotate(-23 78 38)"/>' +
+    '<circle cx="50" cy="56" r="32" fill="__BODY__" stroke="__OUT__" stroke-width="3"/>__PAT____FACE__' +
+    '<path d="M45 66 Q50 74 55 66 Q56 80 50 82 Q44 80 45 66" fill="#f18e9a"/>',
+    // Hamster
+    '<circle cx="24" cy="29" r="12" fill="__LIGHT__" stroke="__OUT__" stroke-width="3"/><circle cx="76" cy="29" r="12" fill="__LIGHT__" stroke="__OUT__" stroke-width="3"/>' +
+    '<ellipse cx="50" cy="57" rx="34" ry="31" fill="__BODY__" stroke="__OUT__" stroke-width="3"/>__PAT____FACE__' +
+    '<circle cx="27" cy="65" r="11" fill="__LIGHT__" opacity=".8"/><circle cx="73" cy="65" r="11" fill="__LIGHT__" opacity=".8"/>'
   ];
 
-  var SHAPE_NAMES = ['Chalé', 'Cúpula', 'Pirâmide', 'Prédio', 'Castelo', 'Torre', 'Tambor'];
+  var SHAPE_NAMES = ['Coelhinho', 'Gatinho', 'Ursinho', 'Raposinha', 'Pandinha', 'Cachorrinho', 'Hamster'];
 
   function svgFor(shape, color) {
     var c = COLORS[color % COLORS.length];
-    var base = c.hex;
-    var body = base;
-    var roof = darken(base, 0.34);
-    var door = lighten(base, 0.72);
-    var windowCol = lighten(base, 0.62);
-
-    var markup = SHAPE_PATHS[shape % SHAPE_PATHS.length]
-      .replace(/__ROOF__/g, roof)
-      .replace(/__BODY__/g, body)
-      .replace(/__DOOR__/g, door)
-      .replace(/__WINDOW__/g, windowCol)
-      .replace(/__CID__/g, c.id);
-
-    return '<svg class="house-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" ' +
-      'role="img" aria-hidden="true" focusable="false">' + markup + '</svg>';
+    var body = c.hex;
+    var out = darken(body, .3);
+    var light = lighten(body, .72);
+    var pattern = '<circle cx="50" cy="56" r="29" fill="url(#patinhas-pat-' + c.id + ')"/>';
+    var markup = ANIMALS[shape % ANIMALS.length]
+      .replace(/__BODY__/g, body).replace(/__OUT__/g, out).replace(/__LIGHT__/g, light)
+      .replace(/__PAT__/g, pattern).replace(/__FACE__/g, COMMON_FACE);
+    return '<svg class="animal-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true" focusable="false">' + markup + '</svg>';
   }
 
-  function cardBg(color) {
-    return mix(COLORS[color % COLORS.length].hex, '#ffffff', 0.9);
-  }
+  function cardBg(color) { return mix(COLORS[color % COLORS.length].hex, '#ffffff', .9); }
 
-  return {
-    COLORS: COLORS,
-    SHAPE_NAMES: SHAPE_NAMES,
-    defs: defs,
-    svgFor: svgFor,
-    cardBg: cardBg,
-    darken: darken,
-    lighten: lighten,
-    mix: mix
-  };
+  return { COLORS: COLORS, SHAPE_NAMES: SHAPE_NAMES, defs: defs, svgFor: svgFor, cardBg: cardBg,
+    darken: darken, lighten: lighten, mix: mix };
 });
 
 </script>
 <!-- js/game.js -->
 <script>
 /*
- * Town 77 (versão web) — interface e controle de turnos.
+ * Bosque das Patinhas — interface e controle de turnos.
  */
 (function () {
   'use strict';
 
-  var E = window.TownEngine;
-  var AI = window.TownAI;
-  var P = window.TownPieces;
+  var E = window.PatinhasEngine;
+  var AI = window.PatinhasAI;
+  var P = window.PatinhasPieces;
 
   var $ = function (sel) { return document.querySelector(sel); };
 
@@ -1474,7 +1508,7 @@ footer.foot {
 
   function loadConfig() {
     try {
-      var raw = localStorage.getItem('town77.config');
+      var raw = localStorage.getItem('patinhas.config');
       if (!raw) return JSON.parse(JSON.stringify(DEFAULT_CONFIG));
       var parsed = JSON.parse(raw);
       if (!parsed.seats || !parsed.seats.length) return JSON.parse(JSON.stringify(DEFAULT_CONFIG));
@@ -1485,7 +1519,7 @@ footer.foot {
   }
 
   function saveConfig() {
-    try { localStorage.setItem('town77.config', JSON.stringify(config)); } catch (err) { /* ignora */ }
+    try { localStorage.setItem('patinhas.config', JSON.stringify(config)); } catch (err) { /* ignora */ }
   }
 
   /* ------------------------------------------------------------- som */
@@ -1561,7 +1595,7 @@ footer.foot {
       btn.className = 'cell empty';
       btn.dataset.index = String(i);
       btn.setAttribute('role', 'gridcell');
-      btn.setAttribute('aria-label', 'casa ' + E.cellLabel(i));
+      btn.setAttribute('aria-label', 'clareira ' + E.cellLabel(i));
       board.appendChild(btn);
       cells.push(btn);
     }
@@ -1628,7 +1662,7 @@ footer.foot {
       if (p.out) {
         meta.textContent = p.outReason === 'finished' ? 'zerou a mão' : 'sem jogada';
       } else {
-        meta.textContent = 'limite ' + p.limit + ' · ' + p.placed + ' na cidade';
+        meta.textContent = 'limite ' + p.limit + ' · ' + p.placed + ' no bosque';
       }
 
       var count = document.createElement('span');
@@ -1680,7 +1714,7 @@ footer.foot {
         }
         el.classList.toggle('legal', legal);
 
-        // Fantasma da peça selecionada sobre a casa em foco
+        // Prévia do bichinho selecionado sobre a clareira em foco
         if (selected !== null && hoverCell === i && legal) {
           if (el.dataset.ghost !== String(selected)) {
             el.innerHTML = P.svgFor(E.shapeOf(selected), E.colorOf(selected));
@@ -1697,7 +1731,7 @@ footer.foot {
       el.disabled = !el.classList.contains('legal');
     }
 
-    // Destaques de conflito na linha/coluna da casa em foco
+    // Destaques de conflito na linha/coluna da clareira em foco
     if (selected !== null && hoverCell !== null && cells[hoverCell].classList.contains('legal')) {
       var r = E.rowOf(hoverCell), c = E.colOf(hoverCell);
       var conflicts = E.conflicts(state, selected, r, c);
@@ -1716,7 +1750,7 @@ footer.foot {
     var showHand = active && active.human;
 
     $('#hand-hint').textContent = showHand
-      ? 'clique numa peça e depois numa casa'
+      ? 'clique num bichinho e depois numa clareira'
       : (state.over ? 'partida encerrada' : 'aguarde a vez da máquina');
 
     var hand = showHand ? active.hand : (active ? [] : []);
@@ -1745,7 +1779,7 @@ footer.foot {
       btn.style.background = P.cardBg(E.colorOf(tile));
       var legalTiles = E.legalCells(state, tile).length;
       btn.title = E.tileLabel(tile) + ' · ' +
-        (legalTiles === 0 ? 'não cabe em nenhuma casa agora' : legalTiles + (legalTiles === 1 ? ' casa possível' : ' casas possíveis'));
+        (legalTiles === 0 ? 'não cabe em nenhuma clareira agora' : legalTiles + (legalTiles === 1 ? ' clareira possível' : ' clareiras possíveis'));
       btn.setAttribute('aria-label', btn.title);
       btn.innerHTML = P.svgFor(E.shapeOf(tile), E.colorOf(tile));
 
@@ -1789,7 +1823,7 @@ footer.foot {
     var p = E.activePlayer(state);
 
     if (!p.human) {
-      notice.textContent = p.name + ' está escolhendo onde construir…';
+      notice.textContent = p.name + ' está escolhendo onde acolher…';
       return;
     }
 
@@ -1806,15 +1840,15 @@ footer.foot {
       var dead = p.hand.filter(function (t) { return E.legalCells(state, t).length === 0; }).length;
       notice.textContent = dead > 0
         ? dead + (dead === 1 ? ' peça não cabe' : ' peças não cabem') +
-          ' em nenhuma casa neste momento (podem voltar a caber conforme a cidade cresce). Jogue com as que cabem.'
-        : 'Selecione uma peça da mão para ver onde ela pode ser construída.';
+          ' em nenhuma clareira neste momento (podem voltar a caber conforme a turminha cresce). Jogue com as que cabem.'
+        : 'Selecione uma peça da mão para ver onde ela pode ser ocupada.';
       if (dead > 0) notice.className = 'notice warn';
       return;
     }
 
     var spots = E.legalCells(state, selectedTile).length;
     notice.textContent = E.tileLabel(selectedTile) + ': ' + spots +
-      (spots === 1 ? ' casa destacada' : ' casas destacadas') + '. Clique em uma delas.';
+      (spots === 1 ? ' clareira destacada' : ' clareiras destacadas') + '. Clique em uma delas.';
   }
 
   function renderLog() {
@@ -1899,7 +1933,7 @@ footer.foot {
       nm.textContent = row.name + (row.human ? '' : ' · IA');
       var meta = document.createElement('span');
       meta.className = 'r-meta';
-      meta.textContent = handCountText(row.handLeft) + ' na mão · ' + row.placed + ' construídas';
+      meta.textContent = handCountText(row.handLeft) + ' na mão · ' + row.placed + ' acolhidos';
       li.appendChild(pos); li.appendChild(nm); li.appendChild(meta);
       ul.appendChild(li);
     });

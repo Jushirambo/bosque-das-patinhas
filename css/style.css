@@ -175,9 +175,9 @@ h1, h2, h3 { margin: 0; font-weight: 700; letter-spacing: -.01em; }
 
 .cell.conflict { box-shadow: inset 0 0 0 2.5px var(--danger); }
 
-.cell.ghost .house-svg { opacity: .42; }
+.cell.ghost .animal-svg { opacity: .42; }
 
-.cell .house-svg { width: 100%; height: 100%; display: block; }
+.cell .animal-svg { width: 100%; height: 100%; display: block; }
 
 .cell.starter::after {
   content: "";
@@ -324,7 +324,7 @@ h1, h2, h3 { margin: 0; font-weight: 700; letter-spacing: -.01em; }
   outline: 2px solid transparent;
 }
 
-.tile .house-svg { width: 100%; height: 100%; }
+.tile .animal-svg { width: 100%; height: 100%; }
 
 .tile:not(.dead):hover { transform: translateY(-3px); }
 
@@ -518,4 +518,99 @@ footer.foot {
   font-size: 11.5px;
   color: var(--ink-soft);
   text-align: center;
+}
+
+/* ------------------------------------------------ rebrand: bosque fofo */
+:root {
+  --cream: #fff9ed;
+  --cream-2: #f7ecd6;
+  --card: rgba(255, 254, 249, .94);
+  --ink: #413646;
+  --ink-soft: #786c7b;
+  --line: #eadcc5;
+  --accent: #e06684;
+  --accent-soft: #ffe3ea;
+  --danger: #c95663;
+  --shadow-sm: 0 2px 4px rgba(79, 58, 67, .08), 0 5px 14px rgba(79, 58, 67, .06);
+  --shadow-md: 0 12px 35px rgba(79, 58, 67, .15);
+}
+
+body {
+  background:
+    radial-gradient(circle at 8% 12%, rgba(255,255,255,.9) 0 5px, transparent 6px),
+    radial-gradient(circle at 92% 18%, rgba(255,255,255,.8) 0 8px, transparent 9px),
+    linear-gradient(180deg, #dff3df 0 22%, #f7efcf 22% 100%);
+  background-attachment: fixed;
+}
+
+body::before, body::after {
+  content: "";
+  position: fixed;
+  z-index: -1;
+  border-radius: 50%;
+  filter: blur(1px);
+  opacity: .6;
+}
+body::before { width: 280px; height: 280px; left: -90px; bottom: -80px; background: #b9dfbd; }
+body::after { width: 220px; height: 220px; right: -60px; bottom: -40px; background: #cfe8b5; }
+
+.topbar { border-bottom: 2px dashed rgba(116, 151, 105, .25); }
+.brand { align-items: center; }
+.brand h1 {
+  font-family: "Trebuchet MS", ui-rounded, system-ui, sans-serif;
+  color: #5d7657;
+  font-size: clamp(22px, 4vw, 31px);
+  letter-spacing: -.035em;
+  text-transform: none;
+  position: relative;
+}
+.brand h1::before { content: "🐾"; font-size: .75em; margin-right: 8px; }
+.brand .tag { color: #9b7181; letter-spacing: .1em; }
+
+.btn { border-width: 2px; box-shadow: var(--shadow-sm); }
+.btn-primary { background: linear-gradient(135deg, #e66f8c, #d65c7b); border-color: #d65c7b; }
+.btn-primary:hover { background: #ca5170; }
+
+.board-frame {
+  background: #fffaf0;
+  border: 3px solid #fff;
+  outline: 2px solid #d6c79f;
+  box-shadow: 0 16px 40px rgba(83, 95, 61, .17);
+}
+.board {
+  padding: 5px;
+  border-radius: 13px;
+  background: linear-gradient(135deg, #b9d99b, #cfe5ae);
+}
+.cell {
+  border-radius: 13px;
+  background: rgba(255, 251, 224, .46);
+  border: 1.5px dashed rgba(99, 126, 78, .28);
+}
+.cell:nth-child(3n) { background: rgba(255, 244, 205, .52); }
+.cell.filled { border-color: rgba(87, 105, 69, .17); background: #fffdf6; }
+.cell.empty.legal { background: #fff2b9; border-color: #dd9d55; box-shadow: inset 0 0 0 2px rgba(255,255,255,.6); }
+.cell.empty.legal:hover { background: #ffe59a; box-shadow: 0 0 0 4px rgba(229, 149, 82, .2); }
+.cell .animal-svg { width: 94%; height: 94%; display: block; filter: drop-shadow(0 2px 1px rgba(65,54,70,.12)); }
+.cell.ghost .animal-svg { opacity: .46; }
+
+.panel { border: 2px solid rgba(234, 220, 197, .8); }
+.panel h2, .hand-head h2 { color: #8a7588 !important; }
+.players li, .notice, .ranking li { background: #fff8e9; }
+.players li.active, .ranking li.winner { background: #ffe6ed; }
+.tile { border-radius: 16px; border-width: 2px; }
+.tile.selected { outline-color: #df6987; box-shadow: 0 9px 20px rgba(224, 102, 132, .25); }
+.tile .animal-svg { filter: drop-shadow(0 2px 1px rgba(65,54,70,.12)); }
+
+.modal-backdrop { background: rgba(73, 69, 77, .48); }
+.modal { border: 3px solid #fff; outline: 2px solid #eadcc5; }
+.modal h2 { font-family: "Trebuchet MS", ui-rounded, system-ui, sans-serif; color: #5d7657; }
+.legend i { border-radius: 50%; box-shadow: inset 0 0 0 1px rgba(65,54,70,.13); }
+footer.foot::before { content: "🐰  🐱  🐻  🦊  🐼  🐶  🐹"; display: block; margin-bottom: 7px; letter-spacing: .3em; font-size: 17px; }
+
+@media (max-width: 620px) {
+  .brand { align-items: flex-start; flex-direction: column; gap: 1px; }
+  .brand .tag { margin-left: 35px; }
+  .board { gap: 2px; padding: 3px; }
+  .cell { border-radius: 9px; }
 }

@@ -1,16 +1,15 @@
 /*
- * Town 77 (versão web) — motor de regras
+ * Bosque das Patinhas — motor de regras
  * Implementação independente e não oficial, feita apenas para fins de estudo.
- * Jogo original: "Town 77" (2023) de Christoph Cantzler & Anja Wrede, publicado pela Oink Games.
  *
  * Regras implementadas
  * --------------------
- * - 49 peças: todas as combinações de 7 casas x 7 cores (uma de cada).
- * - Um único tabuleiro 7x7 é construído por todos os jogadores em conjunto.
+ * - 49 peças: todas as combinações de 7 espécies x 7 cores (uma de cada).
+ * - Um único tabuleiro 7x7 é ocupado por todos os jogadores em conjunto.
  * - A peça inicial é sorteada e vai para a célula superior esquerda.
  * - Em seu turno o jogador coloca uma peça da mão em uma célula vazia que seja
  *   ortogonalmente vizinha de uma peça já colocada. A peça não pode repetir a
- *   cor nem a casa de nenhuma peça na mesma LINHA nem na mesma COLUNA.
+ *   cor nem a espécie de nenhuma peça na mesma LINHA nem na mesma COLUNA.
  * - Depois de colocar, o jogador escolhe comprar uma peça do saco ou não.
  *   Ao não comprar, o limite de peças na mão cai permanentemente.
  * - Quem fica sem jogada possível é eliminado (leva as peças que restaram).
@@ -22,7 +21,7 @@
   'use strict';
   var api = factory();
   if (typeof module === 'object' && module.exports) module.exports = api;
-  if (root) root.TownEngine = api;
+  if (root) root.PatinhasEngine = api;
 })(typeof globalThis !== 'undefined' ? globalThis : this, function () {
   'use strict';
 
@@ -30,23 +29,23 @@
   var N_TILES = SIZE * SIZE;
 
   var COLORS = [
-    { id: 'vermelho', name: 'Vermelho', hex: '#e0524b', ink: '#5f1714', pattern: 'dots' },
-    { id: 'laranja', name: 'Laranja', hex: '#ef8b3c', ink: '#6d3a0d', pattern: 'diagonals' },
-    { id: 'amarelo', name: 'Amarelo', hex: '#e9c53f', ink: '#6a5410', pattern: 'stripes' },
-    { id: 'verde', name: 'Verde', hex: '#4fa564', ink: '#1b4a2b', pattern: 'grid' },
-    { id: 'azul', name: 'Azul', hex: '#3f7cc9', ink: '#14315c', pattern: 'rings' },
-    { id: 'roxo', name: 'Roxo', hex: '#8a63c4', ink: '#38205e', pattern: 'cross' },
-    { id: 'rosa', name: 'Rosa', hex: '#d75f96', ink: '#6b1a41', pattern: 'waves' }
+    { id: 'morango', name: 'Morango', hex: '#ef6b78', ink: '#6b2631', pattern: 'hearts' },
+    { id: 'tangerina', name: 'Tangerina', hex: '#f59a4a', ink: '#6d3a0d', pattern: 'dots' },
+    { id: 'mel', name: 'Mel', hex: '#e9bd45', ink: '#655014', pattern: 'stars' },
+    { id: 'menta', name: 'Menta', hex: '#67b985', ink: '#22583a', pattern: 'leaves' },
+    { id: 'ceu', name: 'Céu', hex: '#64a9d9', ink: '#214f70', pattern: 'clouds' },
+    { id: 'lavanda', name: 'Lavanda', hex: '#9b82d1', ink: '#49366e', pattern: 'flowers' },
+    { id: 'pitaya', name: 'Pitaya', hex: '#df79ad', ink: '#6b2d4c', pattern: 'waves' }
   ];
 
   var SHAPES = [
-    { id: 'chale', name: 'Chalé' },
-    { id: 'cupula', name: 'Cúpula' },
-    { id: 'piramide', name: 'Pirâmide' },
-    { id: 'predio', name: 'Prédio' },
-    { id: 'castelo', name: 'Castelo' },
-    { id: 'torre', name: 'Torre' },
-    { id: 'tambor', name: 'Tambor' }
+    { id: 'coelho', name: 'Coelhinho' },
+    { id: 'gato', name: 'Gatinho' },
+    { id: 'urso', name: 'Ursinho' },
+    { id: 'raposa', name: 'Raposinha' },
+    { id: 'panda', name: 'Pandinha' },
+    { id: 'cachorro', name: 'Cachorrinho' },
+    { id: 'hamster', name: 'Hamster' }
   ];
 
   var COLUMN_LABELS = 'ABCDEFG';
@@ -307,7 +306,7 @@
     var at = p.hand.indexOf(tile);
     if (at === -1) return { ok: false, reason: 'Essa peça não está na sua mão.' };
     if (!isLegal(state, tile, r, c)) {
-      return { ok: false, reason: 'Jogada inválida: mesma cor ou casa na linha/coluna.' };
+      return { ok: false, reason: 'Jogada inválida: mesma cor ou espécie na linha/coluna.' };
     }
 
     p.hand.splice(at, 1);
@@ -318,7 +317,7 @@
 
     pushLog(state, {
       kind: 'place', seat: p.seat,
-      text: p.name + ' construiu ' + tileLabel(tile) + ' em ' + cellLabel(idx(r, c)) + '.'
+      text: p.name + ' acolheu ' + tileLabel(tile) + ' em ' + cellLabel(idx(r, c)) + '.'
     });
 
     if (p.hand.length === 0) {

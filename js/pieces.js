@@ -1,174 +1,116 @@
 /*
- * Town 77 (versão web) — arte das peças (SVG gerado em tempo de execução).
- * Sete estilos de casa x sete cores/estampas, desenhados do zero.
+ * Bosque das Patinhas — bichinhos vetoriais gerados em tempo de execução.
+ * Sete espécies x sete cores/estampas, com arte original deste projeto.
  */
 (function (root, factory) {
   'use strict';
   var api = factory();
   if (typeof module === 'object' && module.exports) module.exports = api;
-  if (root) root.TownPieces = api;
+  if (root) root.PatinhasPieces = api;
 })(typeof globalThis !== 'undefined' ? globalThis : this, function () {
   'use strict';
 
   var COLORS = [
-    { id: 'vermelho', hex: '#e0524b', pattern: 'dots' },
-    { id: 'laranja', hex: '#ea8433', pattern: 'diagonals' },
-    { id: 'amarelo', hex: '#e2b52c', pattern: 'stripes' },
-    { id: 'verde', hex: '#3f9a5c', pattern: 'grid' },
-    { id: 'azul', hex: '#3572bd', pattern: 'rings' },
-    { id: 'roxo', hex: '#8360c0', pattern: 'cross' },
-    { id: 'rosa', hex: '#d15a90', pattern: 'waves' }
+    { id: 'morango', name: 'Morango', hex: '#ef6b78', pattern: 'hearts' },
+    { id: 'tangerina', name: 'Tangerina', hex: '#f59a4a', pattern: 'dots' },
+    { id: 'mel', name: 'Mel', hex: '#e9bd45', pattern: 'stars' },
+    { id: 'menta', name: 'Menta', hex: '#67b985', pattern: 'leaves' },
+    { id: 'ceu', name: 'Céu', hex: '#64a9d9', pattern: 'clouds' },
+    { id: 'lavanda', name: 'Lavanda', hex: '#9b82d1', pattern: 'flowers' },
+    { id: 'pitaya', name: 'Pitaya', hex: '#df79ad', pattern: 'waves' }
   ];
 
   function clamp(v) { return Math.max(0, Math.min(255, Math.round(v))); }
-
   function hexToRgb(hex) {
     var h = hex.replace('#', '');
     return [parseInt(h.substr(0, 2), 16), parseInt(h.substr(2, 2), 16), parseInt(h.substr(4, 2), 16)];
   }
-
   function mix(hex, target, amount) {
     var a = hexToRgb(hex), b = hexToRgb(target);
     return 'rgb(' + clamp(a[0] + (b[0] - a[0]) * amount) + ',' +
       clamp(a[1] + (b[1] - a[1]) * amount) + ',' +
       clamp(a[2] + (b[2] - a[2]) * amount) + ')';
   }
-
   function darken(hex, amount) { return mix(hex, '#000000', amount); }
   function lighten(hex, amount) { return mix(hex, '#ffffff', amount); }
 
-  /* ------------------------------------------------------- padrões de cor */
-
   function patternBody(kind) {
     switch (kind) {
-      case 'dots':
-        return '<circle cx="3" cy="3" r="1.5"/><circle cx="9" cy="9" r="1.5"/>';
-      case 'diagonals':
-        return '<path d="M-2,14 L14,-2 M-2,2 L2,-2 M10,14 L14,10"/>';
-      case 'stripes':
-        return '<path d="M0,3 H12 M0,9 H12"/>';
-      case 'grid':
-        return '<path d="M0,6 H12 M6,0 V12"/>';
-      case 'rings':
-        return '<circle cx="6" cy="6" r="3.2"/>';
-      case 'cross':
-        return '<path d="M1,1 L11,11 M11,1 L1,11"/>';
-      case 'waves':
-        return '<path d="M0,6 Q3,2 6,6 T12,6"/>';
-      default:
-        return '';
+      case 'hearts': return '<path d="M6 10 C2 7 1 4 3 3 C4.5 2 6 3.5 6 4.5 C6 3.5 7.5 2 9 3 C11 4 10 7 6 10Z"/>';
+      case 'dots': return '<circle cx="3" cy="3" r="1.4"/><circle cx="9" cy="9" r="1.4"/>';
+      case 'stars': return '<path d="M6 1.5 L7.3 4.4 L10.5 4.7 L8 6.8 L8.8 10 L6 8.3 L3.2 10 L4 6.8 L1.5 4.7 L4.7 4.4Z"/>';
+      case 'leaves': return '<path d="M2 8 Q2 3 7 3 Q7 8 2 8 M7 10 Q7 6 11 6 Q11 10 7 10"/>';
+      case 'clouds': return '<path d="M1 8 Q1 5 4 5 Q5 2 8 4 Q11 4 11 8Z"/>';
+      case 'flowers': return '<circle cx="6" cy="3.5" r="2"/><circle cx="8.5" cy="6" r="2"/><circle cx="6" cy="8.5" r="2"/><circle cx="3.5" cy="6" r="2"/>';
+      case 'waves': return '<path d="M0 6 Q3 2 6 6 T12 6"/>';
+      default: return '';
     }
   }
 
-  /** <defs> com as sete estampas — incluir uma vez na página. */
   function defs() {
-    return '<defs>' + COLORS.map(function (c, i) {
-      return '<pattern id="t77-pat-' + c.id + '" patternUnits="userSpaceOnUse" width="12" height="12" ' +
-        'patternTransform="scale(1.35)">' +
-        '<g fill="none" stroke="#ffffff" stroke-opacity="0.55" stroke-width="1.6" ' +
-        'stroke-linecap="round" fill="rgba(255,255,255,0.5)">' + patternBody(c.pattern) + '</g>' +
-        '</pattern>';
+    return '<defs>' + COLORS.map(function (c) {
+      return '<pattern id="patinhas-pat-' + c.id + '" patternUnits="userSpaceOnUse" width="12" height="12" patternTransform="scale(1.25)">' +
+        '<g fill="none" stroke="#fff" stroke-opacity=".44" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round">' +
+        patternBody(c.pattern) + '</g></pattern>';
     }).join('') + '</defs>';
   }
 
-  /* --------------------------------------------------------------- casas */
+  var COMMON_FACE =
+    '<circle cx="39" cy="51" r="3.2" fill="#3e3541"/><circle cx="61" cy="51" r="3.2" fill="#3e3541"/>' +
+    '<path d="M47 61 Q50 64 53 61" fill="none" stroke="#3e3541" stroke-width="2.4" stroke-linecap="round"/>' +
+    '<ellipse cx="50" cy="58" rx="3.2" ry="2.4" fill="#59434a"/>' +
+    '<ellipse cx="33" cy="60" rx="6" ry="3" fill="#f6a0a7" opacity=".6"/><ellipse cx="67" cy="60" rx="6" ry="3" fill="#f6a0a7" opacity=".6"/>';
 
-  var SHAPE_PATHS = [
-    // 0 — Chalé (telhado de duas águas)
-    '<path d="M50 6 L94 48 L6 48 Z" fill="__ROOF__"/>' +
-    '<rect x="16" y="48" width="68" height="44" fill="__BODY__"/>' +
-    '<rect x="16" y="48" width="68" height="44" fill="url(#t77-pat-__CID__)"/>' +
-    '<rect x="42" y="66" width="16" height="26" rx="7" fill="__DOOR__"/>' +
-    '<rect x="56" y="22" width="9" height="16" fill="__ROOF__"/>',
-
-    // 1 — Cúpula
-    '<path d="M14 52 A36 30 0 0 1 86 52 Z" fill="__ROOF__"/>' +
-    '<rect x="14" y="52" width="72" height="40" fill="__BODY__"/>' +
-    '<rect x="14" y="52" width="72" height="40" fill="url(#t77-pat-__CID__)"/>' +
-    '<path d="M50 20 L50 8" stroke="__ROOF__" stroke-width="4" stroke-linecap="round"/>' +
-    '<circle cx="50" cy="7" r="4.5" fill="__ROOF__"/>' +
-    '<path d="M38 92 v-18 a12 12 0 0 1 24 0 v18 z" fill="__DOOR__"/>',
-
-    // 2 — Pirâmide
-    '<path d="M50 4 L96 54 L4 54 Z" fill="__ROOF__"/>' +
-    '<rect x="18" y="54" width="64" height="38" fill="__BODY__"/>' +
-    '<rect x="18" y="54" width="64" height="38" fill="url(#t77-pat-__CID__)"/>' +
-    '<rect x="44" y="66" width="12" height="26" fill="__DOOR__"/>' +
-    '<rect x="24" y="62" width="12" height="10" rx="2" fill="__WINDOW__"/>' +
-    '<rect x="64" y="62" width="12" height="10" rx="2" fill="__WINDOW__"/>',
-
-    // 3 — Prédio (laje reta)
-    '<rect x="10" y="8" width="80" height="84" rx="4" fill="__BODY__"/>' +
-    '<rect x="10" y="8" width="80" height="84" rx="4" fill="url(#t77-pat-__CID__)"/>' +
-    '<rect x="6" y="4" width="88" height="11" rx="3" fill="__ROOF__"/>' +
-    '<g fill="__WINDOW__">' +
-    '<rect x="20" y="24" width="16" height="14" rx="2"/><rect x="42" y="24" width="16" height="14" rx="2"/>' +
-    '<rect x="64" y="24" width="16" height="14" rx="2"/><rect x="20" y="46" width="16" height="14" rx="2"/>' +
-    '<rect x="42" y="46" width="16" height="14" rx="2"/><rect x="64" y="46" width="16" height="14" rx="2"/>' +
-    '</g>' +
-    '<rect x="42" y="70" width="16" height="22" rx="3" fill="__DOOR__"/>',
-
-    // 4 — Castelo
-    '<rect x="6" y="26" width="20" height="66" fill="__ROOF__"/>' +
-    '<rect x="74" y="26" width="20" height="66" fill="__ROOF__"/>' +
-    '<rect x="24" y="44" width="52" height="48" fill="__BODY__"/>' +
-    '<rect x="24" y="44" width="52" height="48" fill="url(#t77-pat-__CID__)"/>' +
-    '<g fill="__ROOF__">' +
-    '<rect x="4" y="18" width="9" height="10"/><rect x="19" y="18" width="9" height="10"/>' +
-    '<rect x="72" y="18" width="9" height="10"/><rect x="87" y="18" width="9" height="10"/>' +
-    '<rect x="22" y="36" width="10" height="10"/><rect x="45" y="36" width="10" height="10"/>' +
-    '<rect x="68" y="36" width="10" height="10"/>' +
-    '</g>' +
-    '<path d="M38 92 v-16 a12 12 0 0 1 24 0 v16 z" fill="__DOOR__"/>',
-
-    // 5 — Torre
-    '<path d="M50 2 L88 30 L12 30 Z" fill="__ROOF__"/>' +
-    '<rect x="26" y="30" width="48" height="62" fill="__BODY__"/>' +
-    '<rect x="26" y="30" width="48" height="62" fill="url(#t77-pat-__CID__)"/>' +
-    '<circle cx="50" cy="50" r="8" fill="__WINDOW__"/>' +
-    '<rect x="43" y="68" width="14" height="24" rx="6" fill="__DOOR__"/>',
-
-    // 6 — Tambor (cilindro)
-    '<rect x="18" y="30" width="64" height="62" rx="10" fill="__BODY__"/>' +
-    '<rect x="18" y="30" width="64" height="62" rx="10" fill="url(#t77-pat-__CID__)"/>' +
-    '<ellipse cx="50" cy="30" rx="32" ry="13" fill="__ROOF__"/>' +
-    '<rect x="30" y="58" width="40" height="6" rx="3" fill="__WINDOW__" opacity="0.8"/>' +
-    '<path d="M40 92 v-14 a10 10 0 0 1 20 0 v14 z" fill="__DOOR__"/>'
+  var ANIMALS = [
+    // Coelho
+    '<ellipse cx="35" cy="22" rx="10" ry="24" fill="__LIGHT__" stroke="__OUT__" stroke-width="3"/><ellipse cx="65" cy="22" rx="10" ry="24" fill="__LIGHT__" stroke="__OUT__" stroke-width="3"/>' +
+    '<ellipse cx="35" cy="21" rx="4" ry="16" fill="#f5abb7"/><ellipse cx="65" cy="21" rx="4" ry="16" fill="#f5abb7"/>' +
+    '<circle cx="50" cy="56" r="32" fill="__BODY__" stroke="__OUT__" stroke-width="3"/>__PAT____FACE__' +
+    '<path d="M31 84 Q50 73 69 84" fill="__LIGHT__"/>',
+    // Gatinho
+    '<path d="M20 36 L25 7 L44 28 M80 36 L75 7 L56 28" fill="__LIGHT__" stroke="__OUT__" stroke-width="3" stroke-linejoin="round"/>' +
+    '<path d="M26 25 L28 14 L38 28 M74 25 L72 14 L62 28" fill="#f5abb7"/>' +
+    '<circle cx="50" cy="56" r="32" fill="__BODY__" stroke="__OUT__" stroke-width="3"/>__PAT____FACE__' +
+    '<path d="M25 57 H9 M26 64 L11 69 M75 57 H91 M74 64 L89 69" stroke="__OUT__" stroke-width="2" stroke-linecap="round"/>',
+    // Ursinho
+    '<circle cx="24" cy="25" r="14" fill="__BODY__" stroke="__OUT__" stroke-width="3"/><circle cx="76" cy="25" r="14" fill="__BODY__" stroke="__OUT__" stroke-width="3"/>' +
+    '<circle cx="24" cy="25" r="6" fill="__LIGHT__"/><circle cx="76" cy="25" r="6" fill="__LIGHT__"/>' +
+    '<circle cx="50" cy="56" r="32" fill="__BODY__" stroke="__OUT__" stroke-width="3"/>__PAT____FACE__' +
+    '<ellipse cx="50" cy="62" rx="13" ry="10" fill="__LIGHT__" opacity=".8"/>',
+    // Raposinha
+    '<path d="M16 38 L24 5 L45 30 M84 38 L76 5 L55 30" fill="__BODY__" stroke="__OUT__" stroke-width="3" stroke-linejoin="round"/>' +
+    '<circle cx="50" cy="56" r="32" fill="__BODY__" stroke="__OUT__" stroke-width="3"/>__PAT__' +
+    '<path d="M26 50 Q50 89 74 50 Q65 78 50 82 Q35 78 26 50" fill="__LIGHT__" opacity=".95"/>__FACE__',
+    // Pandinha
+    '<circle cx="24" cy="25" r="14" fill="#49404a"/><circle cx="76" cy="25" r="14" fill="#49404a"/>' +
+    '<circle cx="50" cy="56" r="32" fill="__LIGHT__" stroke="__OUT__" stroke-width="3"/>__PAT__' +
+    '<ellipse cx="38" cy="51" rx="8" ry="11" fill="#49404a" transform="rotate(18 38 51)"/><ellipse cx="62" cy="51" rx="8" ry="11" fill="#49404a" transform="rotate(-18 62 51)"/>__FACE__',
+    // Cachorrinho
+    '<ellipse cx="22" cy="38" rx="13" ry="25" fill="__OUT__" transform="rotate(23 22 38)"/><ellipse cx="78" cy="38" rx="13" ry="25" fill="__OUT__" transform="rotate(-23 78 38)"/>' +
+    '<circle cx="50" cy="56" r="32" fill="__BODY__" stroke="__OUT__" stroke-width="3"/>__PAT____FACE__' +
+    '<path d="M45 66 Q50 74 55 66 Q56 80 50 82 Q44 80 45 66" fill="#f18e9a"/>',
+    // Hamster
+    '<circle cx="24" cy="29" r="12" fill="__LIGHT__" stroke="__OUT__" stroke-width="3"/><circle cx="76" cy="29" r="12" fill="__LIGHT__" stroke="__OUT__" stroke-width="3"/>' +
+    '<ellipse cx="50" cy="57" rx="34" ry="31" fill="__BODY__" stroke="__OUT__" stroke-width="3"/>__PAT____FACE__' +
+    '<circle cx="27" cy="65" r="11" fill="__LIGHT__" opacity=".8"/><circle cx="73" cy="65" r="11" fill="__LIGHT__" opacity=".8"/>'
   ];
 
-  var SHAPE_NAMES = ['Chalé', 'Cúpula', 'Pirâmide', 'Prédio', 'Castelo', 'Torre', 'Tambor'];
+  var SHAPE_NAMES = ['Coelhinho', 'Gatinho', 'Ursinho', 'Raposinha', 'Pandinha', 'Cachorrinho', 'Hamster'];
 
   function svgFor(shape, color) {
     var c = COLORS[color % COLORS.length];
-    var base = c.hex;
-    var body = base;
-    var roof = darken(base, 0.34);
-    var door = lighten(base, 0.72);
-    var windowCol = lighten(base, 0.62);
-
-    var markup = SHAPE_PATHS[shape % SHAPE_PATHS.length]
-      .replace(/__ROOF__/g, roof)
-      .replace(/__BODY__/g, body)
-      .replace(/__DOOR__/g, door)
-      .replace(/__WINDOW__/g, windowCol)
-      .replace(/__CID__/g, c.id);
-
-    return '<svg class="house-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" ' +
-      'role="img" aria-hidden="true" focusable="false">' + markup + '</svg>';
+    var body = c.hex;
+    var out = darken(body, .3);
+    var light = lighten(body, .72);
+    var pattern = '<circle cx="50" cy="56" r="29" fill="url(#patinhas-pat-' + c.id + ')"/>';
+    var markup = ANIMALS[shape % ANIMALS.length]
+      .replace(/__BODY__/g, body).replace(/__OUT__/g, out).replace(/__LIGHT__/g, light)
+      .replace(/__PAT__/g, pattern).replace(/__FACE__/g, COMMON_FACE);
+    return '<svg class="animal-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true" focusable="false">' + markup + '</svg>';
   }
 
-  function cardBg(color) {
-    return mix(COLORS[color % COLORS.length].hex, '#ffffff', 0.9);
-  }
+  function cardBg(color) { return mix(COLORS[color % COLORS.length].hex, '#ffffff', .9); }
 
-  return {
-    COLORS: COLORS,
-    SHAPE_NAMES: SHAPE_NAMES,
-    defs: defs,
-    svgFor: svgFor,
-    cardBg: cardBg,
-    darken: darken,
-    lighten: lighten,
-    mix: mix
-  };
+  return { COLORS: COLORS, SHAPE_NAMES: SHAPE_NAMES, defs: defs, svgFor: svgFor, cardBg: cardBg,
+    darken: darken, lighten: lighten, mix: mix };
 });

@@ -1,8 +1,8 @@
 /*
- * Town 77 (versão web) — inteligência artificial.
+ * Bosque das Patinhas — inteligência artificial.
  *
  * A IA foi calibrada por simulação (veja tools/tune.mjs). A descoberta principal:
- * como o tabuleiro é comum a todos, construir de forma a reduzir as opções dos
+ * como o tabuleiro é comum a todos, acolher de forma a reduzir as opções dos
  * adversários (bloqueio) rende mais do que apenas manter a própria flexibilidade.
  * O segundo fator decisivo é parar de comprar peças na hora certa (~metade do
  * tabuleiro preenchido): comprar tarde demais deixa a mão cheia quando os
@@ -10,10 +10,10 @@
  */
 (function (root, factory) {
   'use strict';
-  var E = root && root.TownEngine ? root.TownEngine : require('./engine.js');
+  var E = root && root.PatinhasEngine ? root.PatinhasEngine : require('./engine.js');
   var api = factory(E);
   if (typeof module === 'object' && module.exports) module.exports = api;
-  if (root) root.TownAI = api;
+  if (root) root.PatinhasAI = api;
 })(typeof globalThis !== 'undefined' ? globalThis : this, function (E) {
   'use strict';
 
@@ -67,11 +67,11 @@
 
     if (cfg.block > 0) score -= cfg.block * opponentFlex(sim, me) * 0.35;
 
-    // Peças com poucas casas disponíveis devem ser construídas logo
+    // Peças com poucas clareiras disponíveis devem ser acolhidos logo
     var cellsNow = E.legalCells(state, move.tile).length;
     score += cfg.wFew * Math.max(0, 8 - cellsNow);
 
-    // Desempate leve: prefere o centro, que mantém mais casas vizinhas abertas
+    // Desempate leve: prefere o centro, que mantém mais clareiras vizinhas abertas
     var r = E.rowOf(move.cell), c = E.colOf(move.cell);
     score += (3 - Math.abs(3 - r)) * 0.15 + (3 - Math.abs(3 - c)) * 0.15;
 
@@ -97,7 +97,7 @@
   }
 
   /**
-   * Compra uma peça depois de construir?
+   * Compra uma peça depois de acolher?
    * Comprar mantém opções; parar de comprar trava o limite de mão e é o caminho
    * para zerar. O limiar calibrado fica perto da metade do tabuleiro.
    */

@@ -3,9 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Town 77 — versão jogável no navegador</title>
-<meta name="description" content="Adaptação não oficial para navegador do jogo de tabuleiro Town 77 (Oink Games), feita com HTML, CSS e JavaScript puros.">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='18' fill='%23f7f2e8'/><path d='M50 12 L88 44 L12 44 Z' fill='%233f9a5c'/><rect x='22' y='44' width='56' height='42' fill='%23e0524b'/></svg>">
+<title>Bosque das Patinhas — jogo de bichinhos</title>
+<meta name="description" content="Um jogo de lógica original com bichinhos fofinhos, feito em HTML, CSS e JavaScript puros.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='24' fill='%23fff6df'/><circle cx='50' cy='57' r='24' fill='%23ef6b78'/><circle cx='25' cy='28' r='11' fill='%23ef6b78'/><circle cx='48' cy='20' r='11' fill='%23ef6b78'/><circle cx='74' cy='29' r='11' fill='%23ef6b78'/></svg>">
 <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -13,8 +13,8 @@
 
   <header class="topbar">
     <div class="brand">
-      <h1>Town 77</h1>
-      <span class="tag">jogo de tabuleiro · versão web</span>
+      <h1>Bosque das Patinhas</h1>
+      <span class="tag">jogo de lógica · bichinhos fofinhos</span>
     </div>
     <div class="toolbar">
       <button class="btn" id="btn-rules" type="button">Regras</button>
@@ -25,16 +25,16 @@
 
   <main class="layout">
 
-    <section class="board-area" aria-label="Tabuleiro da cidade">
+    <section class="board-area" aria-label="Tabuleiro do bosque">
       <div class="board-frame">
-        <div class="board" id="board" role="grid" aria-label="Cidade 7 por 7"></div>
+        <div class="board" id="board" role="grid" aria-label="Bosque 7 por 7"></div>
         <svg id="svg-defs" width="0" height="0" aria-hidden="true" focusable="false"
              style="position:absolute;width:0;height:0;overflow:hidden"></svg>
       </div>
       <div class="board-caption">
-        <span><b id="fill-count">1</b>/49 casas construídas</span>
-        <span>Saco: <b id="bag-count">0</b></span>
-        <span>Regra: nada de mesma <b>cor</b> ou <b>casa</b> na linha/coluna</span>
+        <span><b id="fill-count">1</b>/49 bichinhos acolhidos</span>
+        <span>Cestinha: <b id="bag-count">0</b></span>
+        <span>Regra: sem repetir <b>cor</b> ou <b>espécie</b> na linha/coluna</span>
       </div>
       <div class="legend" id="legend"></div>
     </section>
@@ -57,16 +57,16 @@
       <section class="panel">
         <div class="hand-head">
           <h2 style="font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-soft)">Mão</h2>
-          <span class="hint" id="hand-hint">clique numa peça e depois numa casa</span>
+          <span class="hint" id="hand-hint">clique num bichinho e depois numa clareira</span>
         </div>
         <div class="hand" id="hand"></div>
       </section>
 
       <section class="panel actions" id="actions">
-        <div id="action-notice" class="notice">Escolha uma peça da mão.</div>
+        <div id="action-notice" class="notice">Escolha um bichinho da mão.</div>
         <div class="draw-slots" id="draw-slots" hidden>
-          <button class="btn btn-primary" id="btn-draw" type="button">Comprar peça</button>
-          <button class="btn" id="btn-skip" type="button">Não comprar</button>
+          <button class="btn btn-primary" id="btn-draw" type="button">Pegar bichinho</button>
+          <button class="btn" id="btn-skip" type="button">Não pegar</button>
         </div>
         <button class="btn btn-ghost" id="btn-auto" type="button">Jogar automaticamente</button>
       </section>
@@ -79,8 +79,7 @@
   </main>
 
   <footer class="foot">
-    Adaptação não oficial, sem fins comerciais, para estudo de programação.
-    “Town 77” é um jogo de Christoph Cantzler &amp; Anja Wrede publicado pela Oink Games — todos os direitos sobre o jogo original pertencem aos seus autores e editora.
+    Um jogo independente com código e arte vetorial originais. Feito com carinho para jogar no navegador.
   </footer>
 </div>
 
@@ -88,25 +87,24 @@
 <div class="modal-backdrop" id="modal-rules" hidden>
   <div class="modal" role="dialog" aria-modal="true" aria-labelledby="rules-title">
     <h2 id="rules-title">Como jogar</h2>
-    <p class="sub">Regras do Town 77, em resumo.</p>
+    <p class="sub">Ajude os bichinhos a encontrar seu cantinho no bosque.</p>
     <div class="rules">
-      <p>Há <b>49 peças</b>: cada uma é uma combinação única de uma <b>casa</b> (7 estilos) e de uma <b>cor</b> (7 cores com estampas diferentes). Todas as peças juntas formam uma única cidade <b>7×7</b>.</p>
+      <p>Há <b>49 bichinhos</b>: cada um combina uma <b>espécie</b> (7 tipos) e uma <b>cor</b> (7 cores estampadas). Juntos, eles formam um bosque <b>7×7</b>.</p>
       <ul>
-        <li><b>Começo:</b> uma peça é sorteada e colocada na célula superior esquerda. Cada jogador recebe <b>4 peças</b> (o resto vai para o saco).</li>
-        <li><b>Na sua vez:</b> coloque 1 peça da mão numa casa vazia que seja <b>vizinha</b> (por um lado) de alguma peça já construída.</li>
-        <li><b>Restrição:</b> a peça não pode ter a mesma <b>cor</b> nem a mesma <b>casa</b> de outra peça na mesma <b>linha</b> ou na mesma <b>coluna</b>.</li>
-        <li><b>Comprar ou não:</b> depois de construir, você pode comprar 1 peça do saco. Se não comprar, seu limite de mão cai para o tamanho atual e <b>nunca mais sobe</b>.</li>
-        <li><b>Saídas:</b> quem coloca a última peça da mão sai (com zero). Quem não tem nenhuma jogada possível também sai, levando as peças que sobraram.</li>
-        <li><b>Fim:</b> quando todos saíram (ou o tabuleiro enche). Vence quem tiver <b>menos peças na mão</b>; empate vai para quem jogou por último.</li>
-        <li><b>Solo:</b> jogue sozinho tentando zerar a mão; o placar mostra quantas peças sobraram.</li>
+        <li><b>Começo:</b> um bichinho é sorteado para a primeira clareira. Cada jogador recebe <b>4 bichinhos</b> (o restante fica na cestinha).</li>
+        <li><b>Na sua vez:</b> coloque 1 bichinho da mão numa clareira vazia <b>vizinha</b> (por um lado) de outro bichinho.</li>
+        <li><b>Restrição:</b> o bichinho não pode ter a mesma <b>cor</b> nem a mesma <b>espécie</b> de outro bichinho na mesma <b>linha</b> ou na mesma <b>coluna</b>.</li>
+        <li><b>Comprar ou não:</b> depois de acolher, você pode pegar 1 bichinho da cestinha. Se não comprar, seu limite de mão cai para o tamanho atual e <b>nunca mais sobe</b>.</li>
+        <li><b>Saídas:</b> quem coloca o último bichinho da mão sai (com zero). Quem não tem jogada possível também sai, levando os bichinhos que sobraram.</li>
+        <li><b>Fim:</b> quando todos saíram (ou o bosque fica cheio). Vence quem tiver <b>menos bichinhos na mão</b>; empate vai para quem jogou por último.</li>
+        <li><b>Solo:</b> jogue sozinho tentando zerar a mão; o placar mostra quantos bichinhos sobraram.</li>
       </ul>
       <h3>Atalhos</h3>
       <ul>
-        <li><b>1…7</b> seleciona a peça correspondente da mão · <b>Esc</b> desmarca · passe o mouse numa casa para ver um “fantasma” da peça e os conflitos.</li>
+        <li><b>1…7</b> seleciona o bichinho correspondente da mão · <b>Esc</b> desmarca · passe o mouse numa clareira para ver uma prévia do bichinho e os conflitos.</li>
       </ul>
-      <p class="credit">
-        Jogo original: <b>Town 77</b> (2023), design de Christoph Cantzler &amp; Anja Wrede, arte de Jun Sasaki, publicado pela Oink Games.
-        Esta é uma adaptação não oficial para navegador, com regras e arte recriadas de forma independente, sem qualquer vínculo com a editora.
+<p class="credit">
+        <b>Bosque das Patinhas</b> é um projeto independente com nome, identidade visual, textos e ilustrações vetoriais originais. Código licenciado sob MIT.
       </p>
     </div>
     <div class="modal-actions" style="margin-top:14px">

@@ -1,13 +1,14 @@
 {
-  "name": "town77-web",
-  "version": "1.0.0",
-  "description": "Adaptação não oficial do jogo de tabuleiro Town 77 (Oink Games) para navegador, em HTML, CSS e JavaScript puros.",
+  "name": "bosque-das-patinhas",
+  "version": "2.0.0",
+  "description": "Jogo de lógica original com bichinhos fofinhos para navegador.",
   "private": false,
   "license": "MIT",
-  "keywords": ["jogo", "board-game", "town-77", "oink-games", "vanilla-js", "puzzle", "svg"],
+  "keywords": ["jogo", "bichinhos", "bosque", "vanilla-js", "puzzle", "svg"],
   "scripts": {
     "test": "node tests/engine.test.js",
     "tune": "node tools/tune.mjs 600",
+    "build": "node tools/build.mjs",
     "serve": "python3 -m http.server 8000"
   }
 }

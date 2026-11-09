@@ -1,108 +1,69 @@
-# Town 77 — versão jogável no navegador
+# Bosque das Patinhas
 
-[![testes](https://github.com/Jushirambo/town77-web/actions/workflows/test.yml/badge.svg)](https://github.com/Jushirambo/town77-web/actions/workflows/test.yml)
+[![testes](https://github.com/Jushirambo/bosque-das-patinhas/actions/workflows/test.yml/badge.svg)](https://github.com/Jushirambo/bosque-das-patinhas/actions/workflows/test.yml)
 
-### ▶️ Jogue agora: **https://jushirambo.github.io/town77-web/**
+### ▶️ Jogue agora: **https://jushirambo.github.io/bosque-das-patinhas/**
 
-Adaptação **não oficial**, feita do zero em HTML, CSS e JavaScript puros (sem build, sem dependências),
-do jogo de tabuleiro **Town 77** da Oink Games.
+Um jogo de lógica independente com bichinhos fofinhos, feito em HTML, CSS e JavaScript puros.
 
-> **Jogo original:** *Town 77* (2023), design de Christoph Cantzler & Anja Wrede, arte de Jun Sasaki,
-> publicado pela Oink Games. Este projeto é um exercício de programação, sem fins comerciais e sem
-> qualquer vínculo com os autores ou com a editora. Todas as regras foram reimplementadas de forma
-> independente e toda a arte (as 7 casas e as 7 estampas de cor) é vetorial e original.
+**Bosque das Patinhas** tem nome, identidade visual, textos, ilustrações vetoriais e código próprios. Sete espécies coloridas precisam encontrar seu cantinho no bosque sem repetir cor ou espécie na mesma linha ou coluna.
 
 ## Jogar
 
-**Online:** https://jushirambo.github.io/town77-web/ (GitHub Pages)
+**Online:** https://jushirambo.github.io/bosque-das-patinhas/
 
-**Local:** abra o `index.html` no navegador — é só isso. Não precisa instalar nada.
+**Local:** abra o `index.html` no navegador. Não precisa instalar nada.
 
-Se quiser um único arquivo (para abrir direto do disco, mandar por e-mail ou publicar como página
-única), abra **`town77-standalone.html`**: ele traz CSS e JS embutidos. Para regerar depois de
-qualquer alteração:
+Para gerar a versão em arquivo único:
 
 ```bash
 node tools/build.mjs
 ```
 
-Se preferir servir por HTTP (recomendado no celular ou para publicar):
-
-```bash
-python3 -m http.server 8000
-# depois abra http://localhost:8000
-```
+O arquivo gerado é `bosque-das-patinhas.html`.
 
 ## O que está implementado
 
-- **Solo (1 jogador)**, 2 a 5 jogadores, tudo no mesmo aparelho, contra a IA ou misturando humanos e máquinas.
-- Tabuleiro **7×7 compartilhado** com as **49 peças** (7 estilos de casa × 7 cores/estampas), uma de cada combinação.
-- Regra central: uma peça não pode repetir **cor** nem **casa** na mesma **linha** ou **coluna**.
-- Só é possível construir em casa **vazia vizinha** de uma peça já colocada.
-- Depois de construir, **comprar ou não** do saco: ao não comprar, o limite de mão cai e nunca mais sobe.
-- Eliminação por falta de jogada (leva as peças na mão) ou por zerar a mão.
-- Vitória de quem terminar com **menos peças na mão**; empate vai para quem jogou por último.
-- Três níveis de IA, histórico da partida, som discreto, atalhos de teclado e layout responsivo.
+- Solo, 2 a 5 jogadores no mesmo aparelho ou contra a IA.
+- Bosque compartilhado **7×7**, com 49 bichinhos: 7 espécies × 7 cores estampadas.
+- Espécies originais: coelhinho, gatinho, ursinho, raposinha, pandinha, cachorrinho e hamster.
+- Uma jogada não pode repetir **cor** nem **espécie** na mesma linha ou coluna.
+- Cada novo bichinho deve ocupar uma clareira vizinha a outro bichinho.
+- Depois de jogar, escolha pegar outro bichinho da cestinha ou reduzir permanentemente o limite da mão.
+- Vence quem terminar com menos bichinhos na mão.
+- Três níveis de IA, histórico, som, atalhos e layout responsivo.
 
-## Como jogar em 30 segundos
+## Como jogar rapidamente
 
-1. Cada um começa com **4 peças**; uma peça inicial já está na cidade.
-2. Clique numa peça da mão (fica elevada) e depois numa casa **destacada em verde**.
-3. Passe o mouse numa casa para ver a peça “fantasma” e os conflitos em vermelho na linha/coluna.
-4. Depois de construir, escolha **Comprar peça** ou **Não comprar** (travando o limite de mão).
-5. Quem ficar sem jogada está fora; quem tiver menos peças na mão no fim ganha.
+1. Cada jogador começa com quatro bichinhos; um já ocupa a primeira clareira.
+2. Clique em um bichinho da mão e depois em uma clareira destacada.
+3. A prévia mostra onde ele pode entrar e destaca conflitos na linha ou coluna.
+4. Depois de jogar, escolha **Pegar bichinho** ou **Não pegar**.
+5. Quem não tiver jogadas sai; ao final, vence quem tiver menos bichinhos na mão.
 
-Atalhos: `1`–`7` selecionam a peça correspondente, `Esc` desmarca, `Enter` confirma a compra.
+Atalhos: `1`–`7` selecionam o bichinho correspondente, `Esc` desmarca e `Enter` confirma a compra.
 
 ## Estrutura
 
 ```
-index.html            tela do jogo (modais de regras, configuração e resultado)
-css/style.css         estilos, layout responsivo, sem fontes ou recursos externos
-js/engine.js          motor de regras puro (sem DOM) — estado, validação, turnos, ranking
-js/ai.js              IA com três níveis, calibrada por simulação
-js/pieces.js          arte vetorial das 49 peças (SVG gerado em tempo de execução)
-js/game.js            interface: renderização, eventos, animação de turnos
-tests/engine.test.js  testes do motor + simulações completas (~160 partidas)
-.github/workflows/test.yml  CI: roda os testes do motor a cada push e pull request
-tools/tune.mjs        script de calibração da IA por torneio de variantes
+index.html                    interface e modais
+css/style.css                 identidade visual responsiva
+js/engine.js                  motor de regras
+js/ai.js                      IA em três níveis
+js/pieces.js                  ilustrações SVG originais dos bichinhos
+js/game.js                    interface e eventos
+tests/engine.test.js          testes e simulações
+tools/build.mjs               gerador do arquivo único
 ```
-
-O `engine.js` não toca no DOM e funciona tanto no navegador (`window.TownEngine`) quanto no
-Node (`require`), o que permite testar as regras sem navegador.
 
 ## Testes
 
 ```bash
-npm test          # ou: node tests/engine.test.js
+npm test
 ```
 
-O mesmo teste roda automaticamente no GitHub Actions (`.github/workflows/test.yml`) a cada push na
-`main` e em cada pull request.
-
-Os testes cobrem: unicidade das 49 peças, distribuição inicial, restrições de linha/coluna,
-vizinhança, compra/limite de mão, eliminações, desempate e — o mais importante — **simulações de
-partidas completas** verificando que nenhuma peça some ou aparece e que só ocorrem jogadas legais.
-
-## Calibração da IA
-
-```bash
-node tools/tune.mjs 600
-```
-
-A IA foi ajustada rodando milhares de partidas entre variantes de política. Duas conclusões
-guiaram os pesos finais:
-
-1. **Bloquear compensa.** Como o tabuleiro é comum, construir de modo a reduzir as opções dos
-   adversários vale mais do que apenas preservar a própria flexibilidade.
-2. **Parar de comprar cedo.** Quem continua comprando até o tabuleiro encher termina com a mão
-   cheia quando já não há espaços; o ponto ideal ficou perto de **metade do tabuleiro (~24 casas)**.
-
-Resultado típico em 400 partidas de 3 jogadores: bloqueio forte ≈ 29% de vitórias, bloqueio médio
-≈ 26%, sem bloqueio ≈ 16%, compra tardia ≈ 5%.
+Os testes verificam as 49 combinações únicas, distribuição, restrições, vizinhança, compra, limite de mão, eliminações, desempate e partidas completas simuladas.
 
 ## Licença
 
-Código e arte deste repositório: **MIT** (veja `LICENSE`). As regras do jogo original e a marca
-*Town 77* pertencem aos seus autores e à Oink Games; este projeto não redistribui nenhum material
-da edição original (nenhuma imagem, carta ou manual foi copiado).
+Código, textos e ilustrações deste repositório: **MIT**. Veja `LICENSE`.

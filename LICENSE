@@ -1,6 +1,6 @@
 MIT License
 
-Copyright (c) 2026 Town 77 (versão web) — colaboradores
+Copyright (c) 2026 Bosque das Patinhas — colaboradores
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -19,19 +19,3 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-
---------------------------------------------------------------------------------
-
-Nota sobre o jogo original
-
-Este repositório é uma adaptação não oficial, independente e sem fins
-comerciais, do jogo de tabuleiro "Town 77" (2023), criado por Christoph
-Cantzler e Anja Wrede, com arte de Jun Sasaki, publicado pela Oink Games.
-As regras do jogo, o nome "Town 77" e demais elementos da obra original
-pertencem aos seus autores e à editora. Nenhum material da edição original
-(imagens, cartas, manual ou logotipos) é distribuído aqui: as regras foram
-reimplementadas em código e toda a arte vetorial das peças foi desenhada
-originalmente para este projeto.
-
-A licença MIT acima se aplica apenas ao código e à arte originais deste
-repositório.

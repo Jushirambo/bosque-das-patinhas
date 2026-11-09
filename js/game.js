@@ -1,12 +1,12 @@
 /*
- * Town 77 (versão web) — interface e controle de turnos.
+ * Bosque das Patinhas — interface e controle de turnos.
  */
 (function () {
   'use strict';
 
-  var E = window.TownEngine;
-  var AI = window.TownAI;
-  var P = window.TownPieces;
+  var E = window.PatinhasEngine;
+  var AI = window.PatinhasAI;
+  var P = window.PatinhasPieces;
 
   var $ = function (sel) { return document.querySelector(sel); };
 
@@ -30,7 +30,7 @@
 
   function loadConfig() {
     try {
-      var raw = localStorage.getItem('town77.config');
+      var raw = localStorage.getItem('patinhas.config');
       if (!raw) return JSON.parse(JSON.stringify(DEFAULT_CONFIG));
       var parsed = JSON.parse(raw);
       if (!parsed.seats || !parsed.seats.length) return JSON.parse(JSON.stringify(DEFAULT_CONFIG));
@@ -41,7 +41,7 @@
   }
 
   function saveConfig() {
-    try { localStorage.setItem('town77.config', JSON.stringify(config)); } catch (err) { /* ignora */ }
+    try { localStorage.setItem('patinhas.config', JSON.stringify(config)); } catch (err) { /* ignora */ }
   }
 
   /* ------------------------------------------------------------- som */
@@ -117,7 +117,7 @@
       btn.className = 'cell empty';
       btn.dataset.index = String(i);
       btn.setAttribute('role', 'gridcell');
-      btn.setAttribute('aria-label', 'casa ' + E.cellLabel(i));
+      btn.setAttribute('aria-label', 'clareira ' + E.cellLabel(i));
       board.appendChild(btn);
       cells.push(btn);
     }
@@ -184,7 +184,7 @@
       if (p.out) {
         meta.textContent = p.outReason === 'finished' ? 'zerou a mão' : 'sem jogada';
       } else {
-        meta.textContent = 'limite ' + p.limit + ' · ' + p.placed + ' na cidade';
+        meta.textContent = 'limite ' + p.limit + ' · ' + p.placed + ' no bosque';
       }
 
       var count = document.createElement('span');
@@ -236,7 +236,7 @@
         }
         el.classList.toggle('legal', legal);
 
-        // Fantasma da peça selecionada sobre a casa em foco
+        // Prévia do bichinho selecionado sobre a clareira em foco
         if (selected !== null && hoverCell === i && legal) {
           if (el.dataset.ghost !== String(selected)) {
             el.innerHTML = P.svgFor(E.shapeOf(selected), E.colorOf(selected));
@@ -253,7 +253,7 @@
       el.disabled = !el.classList.contains('legal');
     }
 
-    // Destaques de conflito na linha/coluna da casa em foco
+    // Destaques de conflito na linha/coluna da clareira em foco
     if (selected !== null && hoverCell !== null && cells[hoverCell].classList.contains('legal')) {
       var r = E.rowOf(hoverCell), c = E.colOf(hoverCell);
       var conflicts = E.conflicts(state, selected, r, c);
@@ -272,7 +272,7 @@
     var showHand = active && active.human;
 
     $('#hand-hint').textContent = showHand
-      ? 'clique numa peça e depois numa casa'
+      ? 'clique num bichinho e depois numa clareira'
       : (state.over ? 'partida encerrada' : 'aguarde a vez da máquina');
 
     var hand = showHand ? active.hand : (active ? [] : []);
@@ -301,7 +301,7 @@
       btn.style.background = P.cardBg(E.colorOf(tile));
       var legalTiles = E.legalCells(state, tile).length;
       btn.title = E.tileLabel(tile) + ' · ' +
-        (legalTiles === 0 ? 'não cabe em nenhuma casa agora' : legalTiles + (legalTiles === 1 ? ' casa possível' : ' casas possíveis'));
+        (legalTiles === 0 ? 'não cabe em nenhuma clareira agora' : legalTiles + (legalTiles === 1 ? ' clareira possível' : ' clareiras possíveis'));
       btn.setAttribute('aria-label', btn.title);
       btn.innerHTML = P.svgFor(E.shapeOf(tile), E.colorOf(tile));
 
@@ -345,7 +345,7 @@
     var p = E.activePlayer(state);
 
     if (!p.human) {
-      notice.textContent = p.name + ' está escolhendo onde construir…';
+      notice.textContent = p.name + ' está escolhendo onde acolher…';
       return;
     }
 
@@ -362,15 +362,15 @@
       var dead = p.hand.filter(function (t) { return E.legalCells(state, t).length === 0; }).length;
       notice.textContent = dead > 0
         ? dead + (dead === 1 ? ' peça não cabe' : ' peças não cabem') +
-          ' em nenhuma casa neste momento (podem voltar a caber conforme a cidade cresce). Jogue com as que cabem.'
-        : 'Selecione uma peça da mão para ver onde ela pode ser construída.';
+          ' em nenhuma clareira neste momento (podem voltar a caber conforme a turminha cresce). Jogue com as que cabem.'
+        : 'Selecione uma peça da mão para ver onde ela pode ser ocupada.';
       if (dead > 0) notice.className = 'notice warn';
       return;
     }
 
     var spots = E.legalCells(state, selectedTile).length;
     notice.textContent = E.tileLabel(selectedTile) + ': ' + spots +
-      (spots === 1 ? ' casa destacada' : ' casas destacadas') + '. Clique em uma delas.';
+      (spots === 1 ? ' clareira destacada' : ' clareiras destacadas') + '. Clique em uma delas.';
   }
 
   function renderLog() {
@@ -455,7 +455,7 @@
       nm.textContent = row.name + (row.human ? '' : ' · IA');
       var meta = document.createElement('span');
       meta.className = 'r-meta';
-      meta.textContent = handCountText(row.handLeft) + ' na mão · ' + row.placed + ' construídas';
+      meta.textContent = handCountText(row.handLeft) + ' na mão · ' + row.placed + ' acolhidos';
       li.appendChild(pos); li.appendChild(nm); li.appendChild(meta);
       ul.appendChild(li);
     });

@@ -33,9 +33,9 @@ function seeded(seed) {
   };
 }
 
-console.log('Town 77 — testes do motor\n');
+console.log('Bosque das Patinhas — testes do motor\n');
 
-test('49 peças únicas: 7 cores x 7 casas', function () {
+test('49 peças únicas: 7 cores x 7 espécies', function () {
   var seen = {};
   for (var i = 0; i < E.N_TILES; i++) {
     var key = E.colorOf(i) + '-' + E.shapeOf(i);
@@ -53,7 +53,7 @@ test('peça inicial fica na célula 0 e cada jogador recebe 4 peças', function 
   assert.strictEqual(totalTiles, 49, 'soma de peças deve ser 49');
 });
 
-test('não é permitido repetir cor ou casa na linha/coluna', function () {
+test('não é permitido repetir cor ou espécie na linha/coluna', function () {
   var s = E.createGame({ players: [{ name: 'A' }, { name: 'B' }], rng: seeded(2) });
   var p = E.activePlayer(s);
   var illegalFound = false;
@@ -63,16 +63,16 @@ test('não é permitido repetir cor ou casa na linha/coluna', function () {
     // peça de mesma cor da peça inicial, na mesma linha
     var sameColor = E.makeTile(E.colorOf(s.grid[0]), (E.shapeOf(s.grid[0]) + 1) % 7);
     assert.strictEqual(E.isLegal(s, sameColor, 0, c), false, 'mesma cor deveria ser ilegal');
-    // peça de mesma casa, na mesma coluna
+    // peça de mesma espécie, na mesma coluna
     var sameShape = E.makeTile((E.colorOf(s.grid[0]) + 1) % 7, E.shapeOf(s.grid[0]));
-    assert.strictEqual(E.isLegal(s, sameShape, r, 0), false, 'mesma casa deveria ser ilegal');
+    assert.strictEqual(E.isLegal(s, sameShape, r, 0), false, 'mesma espécie deveria ser ilegal');
     illegalFound = true;
   }
   assert.ok(illegalFound);
   assert.ok(p.hand.length === 4);
 });
 
-test('célula precisa ter vizinha construída', function () {
+test('célula precisa ter vizinha ocupada', function () {
   var s = E.createGame({ players: [{ name: 'A' }, { name: 'B' }], rng: seeded(3) });
   var far = E.idx(6, 6);
   for (var t = 0; t < E.N_TILES; t++) {
@@ -121,7 +121,7 @@ test('jogador sem jogada é eliminado e leva as peças restantes', function () {
   var s = E.createGame({ players: [{ name: 'A' }, { name: 'B' }], rng: seeded(7) });
   // esvazia o saco e troca a mão do jogador 0 por uma peça impossível de jogar
   var p = E.activePlayer(s);
-  p.hand = [E.makeTile(E.colorOf(s.grid[0]), E.shapeOf(s.grid[0]))]; // mesma cor e casa da inicial
+  p.hand = [E.makeTile(E.colorOf(s.grid[0]), E.shapeOf(s.grid[0]))]; // mesma cor e espécie da inicial
   assert.strictEqual(E.hasAnyMove(s, p), false);
   E.beginTurn(s);
   assert.strictEqual(p.out, true);
