@@ -1,0 +1,2145 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Town 77 — versão jogável no navegador (arquivo único)</title>
+<meta name="description" content="Adaptação não oficial para navegador do jogo de tabuleiro Town 77 (Oink Games), feita com HTML, CSS e JavaScript puros.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='18' fill='%23f7f2e8'/><path d='M50 12 L88 44 L12 44 Z' fill='%233f9a5c'/><rect x='22' y='44' width='56' height='42' fill='%23e0524b'/></svg>">
+<style>
+:root {
+  --cream: #f7f2e8;
+  --cream-2: #efe7d7;
+  --card: #fffdf8;
+  --ink: #232732;
+  --ink-soft: #5c6272;
+  --line: #dcd2bf;
+  --accent: #2f7d52;
+  --accent-soft: #dcefe1;
+  --danger: #c0463f;
+  --shadow-sm: 0 1px 2px rgba(35, 39, 50, .12), 0 2px 8px rgba(35, 39, 50, .06);
+  --shadow-md: 0 6px 20px rgba(35, 39, 50, .14);
+  --radius: 14px;
+  --board-max: min(74vh, 640px, 92vw);
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  min-height: 100%;
+}
+
+body {
+  background:
+    radial-gradient(1200px 600px at 12% -10%, #fffdf7 0%, transparent 60%),
+    radial-gradient(900px 500px at 110% 110%, #f0e6d3 0%, transparent 65%),
+    var(--cream);
+  color: var(--ink);
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-size: 15px;
+  line-height: 1.45;
+  -webkit-font-smoothing: antialiased;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  border: none;
+  background: none;
+}
+
+h1, h2, h3 { margin: 0; font-weight: 700; letter-spacing: -.01em; }
+
+.app {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 18px clamp(12px, 3vw, 26px) 40px;
+}
+
+/* ------------------------------------------------------------- topbar */
+
+.topbar {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 18px;
+}
+
+.brand {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-right: auto;
+}
+
+.brand h1 {
+  font-family: ui-serif, Georgia, "Times New Roman", serif;
+  font-size: 26px;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+}
+
+.brand .tag {
+  font-size: 11px;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.toolbar { display: flex; gap: 8px; flex-wrap: wrap; }
+
+.btn {
+  border-radius: 999px;
+  padding: 8px 15px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow-sm);
+  font-size: 13.5px;
+  font-weight: 600;
+  transition: transform .12s ease, background .16s ease, border-color .16s ease;
+}
+
+.btn:hover { transform: translateY(-1px); background: #fff; }
+.btn:active { transform: translateY(0); }
+.btn-primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+.btn-primary:hover { background: #266847; }
+.btn-ghost { background: transparent; box-shadow: none; }
+
+/* ------------------------------------------------------------- layout */
+
+.layout {
+  display: grid;
+  grid-template-columns: minmax(320px, 1fr) 344px;
+  gap: clamp(16px, 2.4vw, 30px);
+  align-items: start;
+}
+
+@media (max-width: 900px) {
+  .layout { grid-template-columns: 1fr; }
+  :root { --board-max: min(88vw, 560px); }
+}
+
+/* -------------------------------------------------------------- board */
+
+.board-area { display: flex; flex-direction: column; align-items: center; gap: 14px; }
+
+.board-frame {
+  width: var(--board-max);
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 22px;
+  padding: clamp(8px, 1.4vw, 14px);
+  box-shadow: var(--shadow-md);
+}
+
+.board {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  grid-template-rows: repeat(7, 1fr);
+  gap: 4px;
+}
+
+.cell {
+  position: relative;
+  border-radius: 8px;
+  background: #f2ece0;
+  border: 1px dashed #ded3bf;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  overflow: hidden;
+  transition: background .15s ease, box-shadow .15s ease, border-color .15s ease;
+}
+
+.cell.filled {
+  border: 1px solid rgba(35, 39, 50, .16);
+  background: #fff;
+  cursor: default;
+  animation: drop .22s ease-out;
+}
+
+@keyframes drop {
+  from { transform: scale(.78); opacity: .2; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+.cell.empty.legal {
+  background: var(--accent-soft);
+  border: 1.5px solid var(--accent);
+  cursor: pointer;
+  box-shadow: inset 0 0 0 1px rgba(47, 125, 82, .25);
+}
+
+.cell.empty.legal:hover { background: #c9e8d3; box-shadow: 0 0 0 3px rgba(47, 125, 82, .22); }
+
+.cell.conflict { box-shadow: inset 0 0 0 2.5px var(--danger); }
+
+.cell.ghost .house-svg { opacity: .42; }
+
+.cell .house-svg { width: 100%; height: 100%; display: block; }
+
+.cell.starter::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 8px;
+  box-shadow: inset 0 0 0 2px rgba(35, 39, 50, .35);
+  pointer-events: none;
+}
+
+/* Linha / coluna destacadas ao passar o mouse */
+.cell.hl-row, .cell.hl-col { background-color: #f6efdf; }
+
+.board-caption {
+  font-size: 12.5px;
+  color: var(--ink-soft);
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.board-caption b { color: var(--ink); }
+
+/* ------------------------------------------------------------ sidebar */
+
+.sidebar { display: flex; flex-direction: column; gap: 14px; }
+
+.panel {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  padding: 14px;
+}
+
+.panel h2 {
+  font-size: 11px;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  margin-bottom: 10px;
+}
+
+.turn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.badge {
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #fff;
+  background: var(--ink);
+  flex: 0 0 auto;
+}
+
+.badge.p1 { background: #e0524b; }
+.badge.p2 { background: #3572bd; }
+.badge.p3 { background: #3f9a5c; }
+.badge.p4 { background: #8360c0; }
+.badge.p5 { background: #d15a90; }
+
+.turn small { display: block; font-weight: 500; font-size: 12.5px; color: var(--ink-soft); }
+
+.players { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+
+.players li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 9px;
+  border-radius: 10px;
+  background: #faf6ec;
+  font-size: 13.5px;
+}
+
+.players li.active {
+  background: var(--accent-soft);
+  box-shadow: inset 0 0 0 1.5px var(--accent);
+}
+
+.players li.out { opacity: .62; }
+.players .p-name { font-weight: 600; margin-right: auto; }
+.players .p-meta { color: var(--ink-soft); font-size: 12px; white-space: nowrap; }
+.players .p-count {
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 0 7px;
+  font-size: 12px;
+}
+
+/* --------------------------------------------------------------- hand */
+
+.hand-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.hand-head h2 { margin: 0; }
+.hint { font-size: 12px; color: var(--ink-soft); }
+
+.hand {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  min-height: 74px;
+  align-items: center;
+}
+
+.hand-empty {
+  font-size: 13px;
+  color: var(--ink-soft);
+  font-style: italic;
+}
+
+.tile {
+  position: relative;
+  width: 62px;
+  height: 62px;
+  border-radius: 10px;
+  border: 1px solid rgba(35, 39, 50, .18);
+  box-shadow: var(--shadow-sm);
+  padding: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform .13s ease, box-shadow .13s ease, outline-color .13s;
+  outline: 2px solid transparent;
+}
+
+.tile .house-svg { width: 100%; height: 100%; }
+
+.tile:not(.dead):hover { transform: translateY(-3px); }
+
+.tile.selected {
+  transform: translateY(-5px);
+  outline: 2.5px solid var(--accent);
+  box-shadow: 0 8px 18px rgba(47, 125, 82, .28);
+}
+
+.tile.dead {
+  opacity: .45;
+  filter: grayscale(.55);
+  cursor: not-allowed;
+}
+
+.tile .kbd {
+  position: absolute;
+  top: -6px;
+  left: -6px;
+  width: 17px; height: 17px;
+  border-radius: 50%;
+  background: var(--ink);
+  color: #fff;
+  font-size: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+}
+
+/* ------------------------------------------------------------ actions */
+
+.actions { display: flex; flex-direction: column; gap: 8px; }
+
+.draw-slots {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.draw-slots .btn { width: 100%; padding: 10px; }
+
+.notice {
+  font-size: 12.5px;
+  color: var(--ink-soft);
+  background: #faf6ec;
+  border-left: 3px solid var(--line);
+  border-radius: 6px;
+  padding: 7px 9px;
+}
+
+.notice.warn { border-left-color: var(--danger); color: #8d302b; background: #fbeeec; }
+.notice.good { border-left-color: var(--accent); color: #235f3f; background: #ecf6ef; }
+
+/* ---------------------------------------------------------------- log */
+
+.log {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-height: 178px;
+  overflow-y: auto;
+  font-size: 12.5px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.log li {
+  padding-left: 8px;
+  border-left: 2px solid var(--line);
+  color: var(--ink-soft);
+}
+
+.log li.place { border-left-color: var(--accent); color: var(--ink); }
+.log li.out { border-left-color: var(--danger); }
+.log li.end { border-left-color: var(--ink); color: var(--ink); font-weight: 600; }
+
+/* ------------------------------------------------------------- modals */
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(35, 39, 50, .45);
+  backdrop-filter: blur(2px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+  z-index: 50;
+}
+
+.modal-backdrop[hidden] { display: none; }
+
+.modal {
+  background: var(--card);
+  border-radius: 20px;
+  box-shadow: var(--shadow-md);
+  max-width: 560px;
+  width: 100%;
+  max-height: 88vh;
+  overflow-y: auto;
+  padding: 22px;
+}
+
+.modal h2 {
+  font-family: ui-serif, Georgia, serif;
+  font-size: 22px;
+  margin-bottom: 4px;
+}
+
+.modal .sub { color: var(--ink-soft); font-size: 13px; margin-bottom: 16px; }
+
+.field { margin-bottom: 12px; }
+
+.field label {
+  display: block;
+  font-size: 12px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  margin-bottom: 5px;
+}
+
+select, input[type="text"] {
+  font: inherit;
+  padding: 8px 10px;
+  border-radius: 9px;
+  border: 1px solid var(--line);
+  background: #fff;
+  color: var(--ink);
+  width: 100%;
+}
+
+.seat-row {
+  display: grid;
+  grid-template-columns: 28px 1fr 132px 116px;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.seat-row .badge { width: 24px; height: 24px; font-size: 11.5px; }
+.seat-row select { padding: 6px 8px; font-size: 13px; }
+
+.rules { font-size: 13.5px; }
+.rules h3 { font-size: 14px; margin: 16px 0 6px; }
+.rules ul { margin: 0; padding-left: 18px; }
+.rules li { margin-bottom: 5px; color: var(--ink-soft); }
+.rules li b { color: var(--ink); }
+.rules .credit {
+  margin-top: 18px;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+  font-size: 12px;
+  color: var(--ink-soft);
+}
+
+.ranking { list-style: none; margin: 0 0 16px; padding: 0; display: flex; flex-direction: column; gap: 7px; }
+
+.ranking li {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 9px 11px;
+  border-radius: 10px;
+  background: #faf6ec;
+  font-size: 14px;
+}
+
+.ranking li.winner { background: var(--accent-soft); box-shadow: inset 0 0 0 1.5px var(--accent); font-weight: 700; }
+.ranking .pos { font-variant-numeric: tabular-nums; color: var(--ink-soft); width: 18px; }
+.ranking .r-name { margin-right: auto; }
+.ranking .r-meta { font-size: 12px; color: var(--ink-soft); font-variant-numeric: tabular-nums; }
+
+.modal-actions { display: flex; gap: 8px; justify-content: flex-end; flex-wrap: wrap; }
+
+.legend { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; font-size: 12px; color: var(--ink-soft); }
+.legend span { display: inline-flex; align-items: center; gap: 5px; }
+.legend i { width: 11px; height: 11px; border-radius: 3px; display: inline-block; }
+
+.sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;
+}
+
+footer.foot {
+  margin-top: 26px;
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+  font-size: 11.5px;
+  color: var(--ink-soft);
+  text-align: center;
+}
+
+</style>
+</head>
+<body>
+<div class="app">
+
+  <header class="topbar">
+    <div class="brand">
+      <h1>Town 77</h1>
+      <span class="tag">jogo de tabuleiro · versão web</span>
+    </div>
+    <div class="toolbar">
+      <button class="btn" id="btn-rules" type="button">Regras</button>
+      <button class="btn" id="btn-setup" type="button">Nova partida</button>
+      <button class="btn btn-ghost" id="btn-sound" type="button" aria-pressed="true">Som: ligado</button>
+    </div>
+  </header>
+
+  <main class="layout">
+
+    <section class="board-area" aria-label="Tabuleiro da cidade">
+      <div class="board-frame">
+        <div class="board" id="board" role="grid" aria-label="Cidade 7 por 7"></div>
+        <svg id="svg-defs" width="0" height="0" aria-hidden="true" focusable="false"
+             style="position:absolute;width:0;height:0;overflow:hidden"></svg>
+      </div>
+      <div class="board-caption">
+        <span><b id="fill-count">1</b>/49 casas construídas</span>
+        <span>Saco: <b id="bag-count">0</b></span>
+        <span>Regra: nada de mesma <b>cor</b> ou <b>casa</b> na linha/coluna</span>
+      </div>
+      <div class="legend" id="legend"></div>
+    </section>
+
+    <aside class="sidebar">
+
+      <section class="panel">
+        <h2>Vez de jogar</h2>
+        <div class="turn" id="turn-line">
+          <span class="badge p1">1</span>
+          <span id="turn-name">—<small id="turn-sub">carregando…</small></span>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2>Jogadores</h2>
+        <ul class="players" id="players"></ul>
+      </section>
+
+      <section class="panel">
+        <div class="hand-head">
+          <h2 style="font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-soft)">Mão</h2>
+          <span class="hint" id="hand-hint">clique numa peça e depois numa casa</span>
+        </div>
+        <div class="hand" id="hand"></div>
+      </section>
+
+      <section class="panel actions" id="actions">
+        <div id="action-notice" class="notice">Escolha uma peça da mão.</div>
+        <div class="draw-slots" id="draw-slots" hidden>
+          <button class="btn btn-primary" id="btn-draw" type="button">Comprar peça</button>
+          <button class="btn" id="btn-skip" type="button">Não comprar</button>
+        </div>
+        <button class="btn btn-ghost" id="btn-auto" type="button">Jogar automaticamente</button>
+      </section>
+
+      <section class="panel">
+        <h2>Histórico</h2>
+        <ul class="log" id="log"></ul>
+      </section>
+    </aside>
+  </main>
+
+  <footer class="foot">
+    Adaptação não oficial, sem fins comerciais, para estudo de programação.
+    “Town 77” é um jogo de Christoph Cantzler &amp; Anja Wrede publicado pela Oink Games — todos os direitos sobre o jogo original pertencem aos seus autores e editora.
+  </footer>
+</div>
+
+<!-- ------------------------------------------------------------- regras -->
+<div class="modal-backdrop" id="modal-rules" hidden>
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="rules-title">
+    <h2 id="rules-title">Como jogar</h2>
+    <p class="sub">Regras do Town 77, em resumo.</p>
+    <div class="rules">
+      <p>Há <b>49 peças</b>: cada uma é uma combinação única de uma <b>casa</b> (7 estilos) e de uma <b>cor</b> (7 cores com estampas diferentes). Todas as peças juntas formam uma única cidade <b>7×7</b>.</p>
+      <ul>
+        <li><b>Começo:</b> uma peça é sorteada e colocada na célula superior esquerda. Cada jogador recebe <b>4 peças</b> (o resto vai para o saco).</li>
+        <li><b>Na sua vez:</b> coloque 1 peça da mão numa casa vazia que seja <b>vizinha</b> (por um lado) de alguma peça já construída.</li>
+        <li><b>Restrição:</b> a peça não pode ter a mesma <b>cor</b> nem a mesma <b>casa</b> de outra peça na mesma <b>linha</b> ou na mesma <b>coluna</b>.</li>
+        <li><b>Comprar ou não:</b> depois de construir, você pode comprar 1 peça do saco. Se não comprar, seu limite de mão cai para o tamanho atual e <b>nunca mais sobe</b>.</li>
+        <li><b>Saídas:</b> quem coloca a última peça da mão sai (com zero). Quem não tem nenhuma jogada possível também sai, levando as peças que sobraram.</li>
+        <li><b>Fim:</b> quando todos saíram (ou o tabuleiro enche). Vence quem tiver <b>menos peças na mão</b>; empate vai para quem jogou por último.</li>
+        <li><b>Solo:</b> jogue sozinho tentando zerar a mão; o placar mostra quantas peças sobraram.</li>
+      </ul>
+      <h3>Atalhos</h3>
+      <ul>
+        <li><b>1…7</b> seleciona a peça correspondente da mão · <b>Esc</b> desmarca · passe o mouse numa casa para ver um “fantasma” da peça e os conflitos.</li>
+      </ul>
+      <p class="credit">
+        Jogo original: <b>Town 77</b> (2023), design de Christoph Cantzler &amp; Anja Wrede, arte de Jun Sasaki, publicado pela Oink Games.
+        Esta é uma adaptação não oficial para navegador, com regras e arte recriadas de forma independente, sem qualquer vínculo com a editora.
+      </p>
+    </div>
+    <div class="modal-actions" style="margin-top:14px">
+      <button class="btn btn-primary" data-close type="button">Entendi</button>
+    </div>
+  </div>
+</div>
+
+<!-- -------------------------------------------------------------- setup -->
+<div class="modal-backdrop" id="modal-setup" hidden>
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="setup-title">
+    <h2 id="setup-title">Nova partida</h2>
+    <p class="sub">Jogue sozinho, com amigos no mesmo aparelho (passa o mouse) ou contra a máquina.</p>
+
+    <div class="field">
+      <label for="player-count">Número de jogadores</label>
+      <select id="player-count">
+        <option value="1">1 — solo</option>
+        <option value="2" selected>2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label>Assentos</label>
+      <div id="seat-config"></div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn btn-ghost" data-close type="button">Cancelar</button>
+      <button class="btn btn-primary" id="btn-start" type="button">Começar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ----------------------------------------------------------- fim do jogo -->
+<div class="modal-backdrop" id="modal-over" hidden>
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="over-title">
+    <h2 id="over-title">Fim de jogo</h2>
+    <p class="sub" id="over-sub"></p>
+    <ul class="ranking" id="ranking"></ul>
+    <div class="modal-actions">
+      <button class="btn" id="btn-over-setup" type="button">Trocar jogadores</button>
+      <button class="btn btn-primary" id="btn-again" type="button">Jogar de novo</button>
+    </div>
+  </div>
+</div>
+
+<!-- js/engine.js -->
+<script>
+/*
+ * Town 77 (versão web) — motor de regras
+ * Implementação independente e não oficial, feita apenas para fins de estudo.
+ * Jogo original: "Town 77" (2023) de Christoph Cantzler & Anja Wrede, publicado pela Oink Games.
+ *
+ * Regras implementadas
+ * --------------------
+ * - 49 peças: todas as combinações de 7 casas x 7 cores (uma de cada).
+ * - Um único tabuleiro 7x7 é construído por todos os jogadores em conjunto.
+ * - A peça inicial é sorteada e vai para a célula superior esquerda.
+ * - Em seu turno o jogador coloca uma peça da mão em uma célula vazia que seja
+ *   ortogonalmente vizinha de uma peça já colocada. A peça não pode repetir a
+ *   cor nem a casa de nenhuma peça na mesma LINHA nem na mesma COLUNA.
+ * - Depois de colocar, o jogador escolhe comprar uma peça do saco ou não.
+ *   Ao não comprar, o limite de peças na mão cai permanentemente.
+ * - Quem fica sem jogada possível é eliminado (leva as peças que restaram).
+ *   Quem coloca sua última peça também está fora — com zero peças na mão.
+ * - A partida acaba quando todos estão fora (ou o tabuleiro lota).
+ *   Vence quem tiver menos peças na mão; empate é decidido por quem jogou por último.
+ */
+(function (root, factory) {
+  'use strict';
+  var api = factory();
+  if (typeof module === 'object' && module.exports) module.exports = api;
+  if (root) root.TownEngine = api;
+})(typeof globalThis !== 'undefined' ? globalThis : this, function () {
+  'use strict';
+
+  var SIZE = 7;
+  var N_TILES = SIZE * SIZE;
+
+  var COLORS = [
+    { id: 'vermelho', name: 'Vermelho', hex: '#e0524b', ink: '#5f1714', pattern: 'dots' },
+    { id: 'laranja', name: 'Laranja', hex: '#ef8b3c', ink: '#6d3a0d', pattern: 'diagonals' },
+    { id: 'amarelo', name: 'Amarelo', hex: '#e9c53f', ink: '#6a5410', pattern: 'stripes' },
+    { id: 'verde', name: 'Verde', hex: '#4fa564', ink: '#1b4a2b', pattern: 'grid' },
+    { id: 'azul', name: 'Azul', hex: '#3f7cc9', ink: '#14315c', pattern: 'rings' },
+    { id: 'roxo', name: 'Roxo', hex: '#8a63c4', ink: '#38205e', pattern: 'cross' },
+    { id: 'rosa', name: 'Rosa', hex: '#d75f96', ink: '#6b1a41', pattern: 'waves' }
+  ];
+
+  var SHAPES = [
+    { id: 'chale', name: 'Chalé' },
+    { id: 'cupula', name: 'Cúpula' },
+    { id: 'piramide', name: 'Pirâmide' },
+    { id: 'predio', name: 'Prédio' },
+    { id: 'castelo', name: 'Castelo' },
+    { id: 'torre', name: 'Torre' },
+    { id: 'tambor', name: 'Tambor' }
+  ];
+
+  var COLUMN_LABELS = 'ABCDEFG';
+
+  /* ---------------------------------------------------------------- helpers */
+
+  function colorOf(tile) { return Math.floor(tile / SIZE); }
+  function shapeOf(tile) { return tile % SIZE; }
+  function idx(r, c) { return r * SIZE + c; }
+  function rowOf(i) { return Math.floor(i / SIZE); }
+  function colOf(i) { return i % SIZE; }
+  function cellLabel(i) { return COLUMN_LABELS[colOf(i)] + (rowOf(i) + 1); }
+  function tileLabel(tile) {
+    return SHAPES[shapeOf(tile)].name + ' ' + COLORS[colorOf(tile)].name.toLowerCase();
+  }
+
+  function makeTile(color, shape) { return color * SIZE + shape; }
+
+  function shuffle(arr, rng) {
+    rng = rng || Math.random;
+    for (var i = arr.length - 1; i > 0; i--) {
+      var j = Math.floor(rng() * (i + 1));
+      var tmp = arr[i]; arr[i] = arr[j]; arr[j] = tmp;
+    }
+    return arr;
+  }
+
+  function range(n) {
+    var out = [];
+    for (var i = 0; i < n; i++) out.push(i);
+    return out;
+  }
+
+  /* ------------------------------------------------------------- regras base */
+
+  /** Peças (índices de célula) que conflitam com `tile` na linha/coluna de (r,c). */
+  function conflicts(state, tile, r, c) {
+    var res = [];
+    var color = colorOf(tile);
+    var shape = shapeOf(tile);
+    for (var i = 0; i < SIZE; i++) {
+      var inRow = state.grid[idx(r, i)];
+      if (inRow !== null && inRow !== undefined &&
+        (colorOf(inRow) === color || shapeOf(inRow) === shape)) {
+        res.push(idx(r, i));
+      }
+      var inCol = state.grid[idx(i, c)];
+      if (inCol !== null && inCol !== undefined &&
+        (colorOf(inCol) === color || shapeOf(inCol) === shape)) {
+        res.push(idx(i, c));
+      }
+    }
+    return res.filter(function (v, i, a) { return a.indexOf(v) === i; });
+  }
+
+  function hasNeighbor(state, r, c) {
+    var dirs = [[-1, 0], [1, 0], [0, -1], [0, 1]];
+    for (var k = 0; k < dirs.length; k++) {
+      var rr = r + dirs[k][0], cc = c + dirs[k][1];
+      if (rr < 0 || rr >= SIZE || cc < 0 || cc >= SIZE) continue;
+      var v = state.grid[idx(rr, cc)];
+      if (v !== null && v !== undefined) return true;
+    }
+    return false;
+  }
+
+  function isEmptyCell(state, r, c) {
+    if (r < 0 || r >= SIZE || c < 0 || c >= SIZE) return false;
+    var v = state.grid[idx(r, c)];
+    return v === null || v === undefined;
+  }
+
+  function isLegal(state, tile, r, c) {
+    if (!isEmptyCell(state, r, c)) return false;
+    var occupied = occupiedCount(state);
+    if (occupied > 0 && !hasNeighbor(state, r, c)) return false;
+    return conflicts(state, tile, r, c).length === 0;
+  }
+
+  /** Células onde a peça informada pode ser colocada. */
+  function legalCells(state, tile) {
+    var out = [];
+    for (var i = 0; i < N_TILES; i++) {
+      var r = rowOf(i), c = colOf(i);
+      if (isLegal(state, tile, r, c)) out.push(i);
+    }
+    return out;
+  }
+
+  /** Todas as jogadas legais de um jogador: [{ tile, cell }]. */
+  function legalMoves(state, player) {
+    var out = [];
+    for (var h = 0; h < player.hand.length; h++) {
+      var tile = player.hand[h];
+      var cells = legalCells(state, tile);
+      for (var k = 0; k < cells.length; k++) out.push({ tile: tile, cell: cells[k] });
+    }
+    return out;
+  }
+
+  function hasAnyMove(state, player) {
+    for (var h = 0; h < player.hand.length; h++) {
+      if (legalCells(state, player.hand[h]).length > 0) return true;
+    }
+    return false;
+  }
+
+  function occupiedCount(state) {
+    var n = 0;
+    for (var i = 0; i < N_TILES; i++) {
+      var v = state.grid[i];
+      if (v !== null && v !== undefined) n++;
+    }
+    return n;
+  }
+
+  /* -------------------------------------------------------------- estado */
+
+  function createGame(opts) {
+    opts = opts || {};
+    var rng = opts.rng || Math.random;
+    var seats = opts.players && opts.players.length ? opts.players : [
+      { name: 'Jogador 1', human: true },
+      { name: 'Máquina', human: false }
+    ];
+    var handSize = opts.handSize || 4;
+
+    var pool = shuffle(range(N_TILES), rng);
+    var grid = new Array(N_TILES).fill(null);
+
+    var starter = pool.pop();
+    grid[0] = starter;
+
+    var state = {
+      grid: grid,
+      starter: starter,
+      bag: pool,
+      players: seats.map(function (p, i) {
+        return {
+          seat: i,
+          name: p.name || ('Jogador ' + (i + 1)),
+          human: p.human !== false,
+          hand: [],
+          limit: handSize,
+          out: false,
+          outReason: null,
+          placed: 0,
+          lastOrder: 0,
+          draws: 0
+        };
+      }),
+      turn: 0,
+      phase: 'place', // 'place' | 'draw' | 'over'
+      turnCount: 0,
+      canDraw: false,
+      over: false,
+      ranking: [],
+      log: []
+    };
+
+    for (var k = 0; k < state.players.length; k++) {
+      for (var d = 0; d < handSize && pool.length; d++) {
+        state.players[k].hand.push(pool.pop());
+      }
+    }
+
+    pushLog(state, {
+      kind: 'setup',
+      text: 'Peça inicial sorteada: ' + tileLabel(starter) + '.'
+    });
+
+    beginTurn(state);
+    return state;
+  }
+
+  function pushLog(state, entry) {
+    entry.id = state.log.length + 1;
+    entry.order = state.turnCount;
+    state.log.push(entry);
+    if (state.log.length > 200) state.log.shift();
+    return entry;
+  }
+
+  function activePlayer(state) { return state.players[state.turn] || null; }
+
+  function nextSeat(state, from) {
+    var n = state.players.length;
+    for (var i = 1; i <= n; i++) {
+      var s = (from + i) % n;
+      if (!state.players[s].out) return s;
+    }
+    return -1;
+  }
+
+  function everyoneOut(state) {
+    return state.players.every(function (p) { return p.out; });
+  }
+
+  function finish(state) {
+    state.over = true;
+    state.phase = 'over';
+    state.ranking = ranking(state);
+    var winner = state.ranking[0];
+    pushLog(state, {
+      kind: 'end',
+      text: 'Fim de jogo. Vencedor: ' + winner.name + ' (' + winner.handLeft +
+        (winner.handLeft === 1 ? ' peça na mão' : ' peças na mão') + ').'
+    });
+  }
+
+  /** Resolve eliminações e posiciona o jogo no próximo jogador ativo. */
+  function beginTurn(state) {
+    if (state.over) return state;
+    var guard = 0;
+    while (guard++ < 64) {
+      var p = activePlayer(state);
+      if (!p) { finish(state); return state; }
+
+      if (!p.out) {
+        if (p.hand.length === 0) {
+          p.out = true;
+          p.outReason = 'finished';
+          pushLog(state, { kind: 'out', seat: p.seat, text: p.name + ' colocou todas as peças e saiu com a mão vazia.' });
+        } else if (!hasAnyMove(state, p)) {
+          p.out = true;
+          p.outReason = 'stuck';
+          pushLog(state, {
+            kind: 'out', seat: p.seat,
+            text: p.name + ' não tem jogada possível e está fora (' + p.hand.length +
+              (p.hand.length === 1 ? ' peça na mão' : ' peças na mão') + ').'
+          });
+        }
+      }
+
+      if (everyoneOut(state)) { finish(state); return state; }
+
+      if (p.out) {
+        var nxt = nextSeat(state, state.turn);
+        if (nxt === -1) { finish(state); return state; }
+        state.turn = nxt;
+        continue;
+      }
+
+      state.phase = 'place';
+      state.canDraw = false;
+      return state;
+    }
+    return state;
+  }
+
+  /* ----------------------------------------------------------- ações */
+
+  function place(state, tile, r, c) {
+    if (state.over) return { ok: false, reason: 'A partida terminou.' };
+    if (state.phase !== 'place') return { ok: false, reason: 'Não é hora de colocar peça.' };
+
+    var p = activePlayer(state);
+    var at = p.hand.indexOf(tile);
+    if (at === -1) return { ok: false, reason: 'Essa peça não está na sua mão.' };
+    if (!isLegal(state, tile, r, c)) {
+      return { ok: false, reason: 'Jogada inválida: mesma cor ou casa na linha/coluna.' };
+    }
+
+    p.hand.splice(at, 1);
+    state.grid[idx(r, c)] = tile;
+    state.turnCount++;
+    p.placed++;
+    p.lastOrder = state.turnCount;
+
+    pushLog(state, {
+      kind: 'place', seat: p.seat,
+      text: p.name + ' construiu ' + tileLabel(tile) + ' em ' + cellLabel(idx(r, c)) + '.'
+    });
+
+    if (p.hand.length === 0) {
+      p.out = true;
+      p.outReason = 'finished';
+      pushLog(state, { kind: 'out', seat: p.seat, text: p.name + ' colocou a última peça da mão.' });
+      if (everyoneOut(state)) { finish(state); return { ok: true, ended: true }; }
+      var nxt = nextSeat(state, state.turn);
+      if (nxt === -1) { finish(state); return { ok: true, ended: true }; }
+      state.turn = nxt;
+      beginTurn(state);
+      return { ok: true, ended: state.over };
+    }
+
+    state.phase = 'draw';
+    state.canDraw = state.bag.length > 0 && p.hand.length < p.limit;
+    return { ok: true };
+  }
+
+  function drawOrSkip(state, wantDraw) {
+    if (state.over) return { ok: false, reason: 'A partida terminou.' };
+    if (state.phase !== 'draw') return { ok: false, reason: 'Não é hora de comprar.' };
+
+    var p = activePlayer(state);
+    var canDraw = state.bag.length > 0 && p.hand.length < p.limit;
+    var drew = false;
+
+    if (wantDraw && canDraw) {
+      p.hand.push(state.bag.pop());
+      p.draws++;
+      drew = true;
+      pushLog(state, { kind: 'draw', seat: p.seat, text: p.name + ' comprou uma peça (' + p.hand.length + ' na mão).' });
+    } else {
+      var before = p.limit;
+      p.limit = Math.min(p.limit, p.hand.length);
+      pushLog(state, {
+        kind: 'skip', seat: p.seat,
+        text: p.name + ' não comprou' + (p.limit < before ? ' e agora joga com no máximo ' + p.limit + '.' : '.')
+      });
+    }
+
+    var nxt = nextSeat(state, state.turn);
+    if (nxt === -1) { finish(state); return { ok: true, drew: drew, ended: true }; }
+    state.turn = nxt;
+    beginTurn(state);
+    return { ok: true, drew: drew, ended: state.over };
+  }
+
+  /* --------------------------------------------------------- classificação */
+
+  function ranking(state) {
+    return state.players.map(function (p) {
+      return {
+        seat: p.seat,
+        name: p.name,
+        human: p.human,
+        handLeft: p.hand.length,
+        placed: p.placed,
+        outReason: p.outReason,
+        lastOrder: p.lastOrder
+      };
+    }).sort(function (a, b) {
+      if (a.handLeft !== b.handLeft) return a.handLeft - b.handLeft;
+      if (a.lastOrder !== b.lastOrder) return b.lastOrder - a.lastOrder;
+      return a.seat - b.seat;
+    });
+  }
+
+  function cloneState(state) {
+    return {
+      grid: state.grid.slice(),
+      starter: state.starter,
+      bag: state.bag.slice(),
+      players: state.players.map(function (p) {
+        return {
+          seat: p.seat, name: p.name, human: p.human,
+          hand: p.hand.slice(), limit: p.limit, out: p.out,
+          outReason: p.outReason, placed: p.placed,
+          lastOrder: p.lastOrder, draws: p.draws
+        };
+      }),
+      turn: state.turn,
+      phase: state.phase,
+      turnCount: state.turnCount,
+      canDraw: state.canDraw,
+      over: state.over,
+      ranking: state.ranking.slice(),
+      log: state.log.slice()
+    };
+  }
+
+  return {
+    SIZE: SIZE,
+    N_TILES: N_TILES,
+    COLORS: COLORS,
+    SHAPES: SHAPES,
+    COLUMN_LABELS: COLUMN_LABELS,
+    colorOf: colorOf,
+    shapeOf: shapeOf,
+    idx: idx,
+    rowOf: rowOf,
+    colOf: colOf,
+    cellLabel: cellLabel,
+    tileLabel: tileLabel,
+    makeTile: makeTile,
+    createGame: createGame,
+    cloneState: cloneState,
+    conflicts: conflicts,
+    isLegal: isLegal,
+    legalCells: legalCells,
+    legalMoves: legalMoves,
+    hasAnyMove: hasAnyMove,
+    hasNeighbor: hasNeighbor,
+    occupiedCount: occupiedCount,
+    place: place,
+    drawOrSkip: drawOrSkip,
+    beginTurn: beginTurn,
+    activePlayer: activePlayer,
+    ranking: ranking,
+    pushLog: pushLog,
+    shuffle: shuffle,
+    range: range
+  };
+});
+
+</script>
+<!-- js/ai.js -->
+<script>
+/*
+ * Town 77 (versão web) — inteligência artificial.
+ *
+ * A IA foi calibrada por simulação (veja tools/tune.mjs). A descoberta principal:
+ * como o tabuleiro é comum a todos, construir de forma a reduzir as opções dos
+ * adversários (bloqueio) rende mais do que apenas manter a própria flexibilidade.
+ * O segundo fator decisivo é parar de comprar peças na hora certa (~metade do
+ * tabuleiro preenchido): comprar tarde demais deixa a mão cheia quando os
+ * espaços acabam.
+ */
+(function (root, factory) {
+  'use strict';
+  var E = root && root.TownEngine ? root.TownEngine : require('./engine.js');
+  var api = factory(E);
+  if (typeof module === 'object' && module.exports) module.exports = api;
+  if (root) root.TownAI = api;
+})(typeof globalThis !== 'undefined' ? globalThis : this, function (E) {
+  'use strict';
+
+  var DIFFICULTY = {
+    //                     escolhe jogada aleatória   peso do bloqueio   flexibilidade   peça apertada   limiar de compra
+    easy: { randomChance: 0.80, block: 0.0, wFlex: 1.0, wWeak: 1.0, wFew: 0.0, drawThreshold: 0.30 },
+    medium: { randomChance: 0.12, block: 0.9, wFlex: 1.0, wWeak: 2.0, wFew: 1.0, drawThreshold: 0.43 },
+    hard: { randomChance: 0.0, block: 2.0, wFlex: 0.6, wWeak: 1.0, wFew: 1.0, drawThreshold: 0.49 }
+  };
+
+  function pick(arr, rng) { return arr[Math.floor(rng() * arr.length)]; }
+
+  /** Total de células legais somando todas as peças da mão. */
+  function totalFlex(state, player) {
+    var total = 0;
+    for (var i = 0; i < player.hand.length; i++) {
+      total += E.legalCells(state, player.hand[i]).length;
+    }
+    return total;
+  }
+
+  /** Menor número de células legais entre as peças da mão. */
+  function weakestTileFlex(state, player) {
+    var min = Infinity;
+    for (var i = 0; i < player.hand.length; i++) {
+      var n = E.legalCells(state, player.hand[i]).length;
+      if (n < min) min = n;
+    }
+    return min === Infinity ? 0 : min;
+  }
+
+  function opponentFlex(state, player) {
+    var total = 0;
+    for (var i = 0; i < state.players.length; i++) {
+      var other = state.players[i];
+      if (other.out || other.seat === player.seat) continue;
+      total += totalFlex(state, other);
+    }
+    return total;
+  }
+
+  /** Pontuação de uma jogada (quanto maior, melhor). */
+  function evaluate(state, player, move, cfg) {
+    var sim = E.cloneState(state);
+    var me = sim.players[player.seat];
+    var pos = me.hand.indexOf(move.tile);
+    if (pos >= 0) me.hand.splice(pos, 1);
+    sim.grid[move.cell] = move.tile;
+
+    var score = cfg.wFlex * totalFlex(sim, me) + cfg.wWeak * weakestTileFlex(sim, me);
+
+    if (cfg.block > 0) score -= cfg.block * opponentFlex(sim, me) * 0.35;
+
+    // Peças com poucas casas disponíveis devem ser construídas logo
+    var cellsNow = E.legalCells(state, move.tile).length;
+    score += cfg.wFew * Math.max(0, 8 - cellsNow);
+
+    // Desempate leve: prefere o centro, que mantém mais casas vizinhas abertas
+    var r = E.rowOf(move.cell), c = E.colOf(move.cell);
+    score += (3 - Math.abs(3 - r)) * 0.15 + (3 - Math.abs(3 - c)) * 0.15;
+
+    return score;
+  }
+
+  /** Escolhe { tile, cell } para o jogador ativo. */
+  function chooseMove(state, difficulty, rng) {
+    rng = rng || Math.random;
+    var player = E.activePlayer(state);
+    var moves = E.legalMoves(state, player);
+    if (!moves.length) return null;
+
+    var cfg = DIFFICULTY[difficulty] || DIFFICULTY.medium;
+    if (cfg.randomChance && rng() < cfg.randomChance) return pick(moves, rng);
+
+    var best = null, bestScore = -Infinity;
+    for (var i = 0; i < moves.length; i++) {
+      var score = evaluate(state, player, moves[i], cfg);
+      if (score > bestScore) { bestScore = score; best = moves[i]; }
+    }
+    return best;
+  }
+
+  /**
+   * Compra uma peça depois de construir?
+   * Comprar mantém opções; parar de comprar trava o limite de mão e é o caminho
+   * para zerar. O limiar calibrado fica perto da metade do tabuleiro.
+   */
+  function chooseDraw(state, difficulty, rng) {
+    rng = rng || Math.random;
+    var player = E.activePlayer(state);
+    if (!player) return false;
+    if (state.bag.length === 0) return false;
+    if (player.hand.length >= player.limit) return false;
+
+    var cfg = DIFFICULTY[difficulty] || DIFFICULTY.medium;
+    var fill = E.occupiedCount(state) / E.N_TILES;
+    var dangerous = weakestTileFlex(state, player) <= 1;
+
+    var draw = fill < cfg.drawThreshold && !dangerous;
+    if (cfg.randomChance && rng() < cfg.randomChance * 0.9) draw = !draw;
+    return draw;
+  }
+
+  return {
+    DIFFICULTY: DIFFICULTY,
+    chooseMove: chooseMove,
+    chooseDraw: chooseDraw,
+    evaluate: evaluate,
+    totalFlex: totalFlex,
+    weakestTileFlex: weakestTileFlex,
+    opponentFlex: opponentFlex
+  };
+});
+
+</script>
+<!-- js/pieces.js -->
+<script>
+/*
+ * Town 77 (versão web) — arte das peças (SVG gerado em tempo de execução).
+ * Sete estilos de casa x sete cores/estampas, desenhados do zero.
+ */
+(function (root, factory) {
+  'use strict';
+  var api = factory();
+  if (typeof module === 'object' && module.exports) module.exports = api;
+  if (root) root.TownPieces = api;
+})(typeof globalThis !== 'undefined' ? globalThis : this, function () {
+  'use strict';
+
+  var COLORS = [
+    { id: 'vermelho', hex: '#e0524b', pattern: 'dots' },
+    { id: 'laranja', hex: '#ea8433', pattern: 'diagonals' },
+    { id: 'amarelo', hex: '#e2b52c', pattern: 'stripes' },
+    { id: 'verde', hex: '#3f9a5c', pattern: 'grid' },
+    { id: 'azul', hex: '#3572bd', pattern: 'rings' },
+    { id: 'roxo', hex: '#8360c0', pattern: 'cross' },
+    { id: 'rosa', hex: '#d15a90', pattern: 'waves' }
+  ];
+
+  function clamp(v) { return Math.max(0, Math.min(255, Math.round(v))); }
+
+  function hexToRgb(hex) {
+    var h = hex.replace('#', '');
+    return [parseInt(h.substr(0, 2), 16), parseInt(h.substr(2, 2), 16), parseInt(h.substr(4, 2), 16)];
+  }
+
+  function mix(hex, target, amount) {
+    var a = hexToRgb(hex), b = hexToRgb(target);
+    return 'rgb(' + clamp(a[0] + (b[0] - a[0]) * amount) + ',' +
+      clamp(a[1] + (b[1] - a[1]) * amount) + ',' +
+      clamp(a[2] + (b[2] - a[2]) * amount) + ')';
+  }
+
+  function darken(hex, amount) { return mix(hex, '#000000', amount); }
+  function lighten(hex, amount) { return mix(hex, '#ffffff', amount); }
+
+  /* ------------------------------------------------------- padrões de cor */
+
+  function patternBody(kind) {
+    switch (kind) {
+      case 'dots':
+        return '<circle cx="3" cy="3" r="1.5"/><circle cx="9" cy="9" r="1.5"/>';
+      case 'diagonals':
+        return '<path d="M-2,14 L14,-2 M-2,2 L2,-2 M10,14 L14,10"/>';
+      case 'stripes':
+        return '<path d="M0,3 H12 M0,9 H12"/>';
+      case 'grid':
+        return '<path d="M0,6 H12 M6,0 V12"/>';
+      case 'rings':
+        return '<circle cx="6" cy="6" r="3.2"/>';
+      case 'cross':
+        return '<path d="M1,1 L11,11 M11,1 L1,11"/>';
+      case 'waves':
+        return '<path d="M0,6 Q3,2 6,6 T12,6"/>';
+      default:
+        return '';
+    }
+  }
+
+  /** <defs> com as sete estampas — incluir uma vez na página. */
+  function defs() {
+    return '<defs>' + COLORS.map(function (c, i) {
+      return '<pattern id="t77-pat-' + c.id + '" patternUnits="userSpaceOnUse" width="12" height="12" ' +
+        'patternTransform="scale(1.35)">' +
+        '<g fill="none" stroke="#ffffff" stroke-opacity="0.55" stroke-width="1.6" ' +
+        'stroke-linecap="round" fill="rgba(255,255,255,0.5)">' + patternBody(c.pattern) + '</g>' +
+        '</pattern>';
+    }).join('') + '</defs>';
+  }
+
+  /* --------------------------------------------------------------- casas */
+
+  var SHAPE_PATHS = [
+    // 0 — Chalé (telhado de duas águas)
+    '<path d="M50 6 L94 48 L6 48 Z" fill="__ROOF__"/>' +
+    '<rect x="16" y="48" width="68" height="44" fill="__BODY__"/>' +
+    '<rect x="16" y="48" width="68" height="44" fill="url(#t77-pat-__CID__)"/>' +
+    '<rect x="42" y="66" width="16" height="26" rx="7" fill="__DOOR__"/>' +
+    '<rect x="56" y="22" width="9" height="16" fill="__ROOF__"/>',
+
+    // 1 — Cúpula
+    '<path d="M14 52 A36 30 0 0 1 86 52 Z" fill="__ROOF__"/>' +
+    '<rect x="14" y="52" width="72" height="40" fill="__BODY__"/>' +
+    '<rect x="14" y="52" width="72" height="40" fill="url(#t77-pat-__CID__)"/>' +
+    '<path d="M50 20 L50 8" stroke="__ROOF__" stroke-width="4" stroke-linecap="round"/>' +
+    '<circle cx="50" cy="7" r="4.5" fill="__ROOF__"/>' +
+    '<path d="M38 92 v-18 a12 12 0 0 1 24 0 v18 z" fill="__DOOR__"/>',
+
+    // 2 — Pirâmide
+    '<path d="M50 4 L96 54 L4 54 Z" fill="__ROOF__"/>' +
+    '<rect x="18" y="54" width="64" height="38" fill="__BODY__"/>' +
+    '<rect x="18" y="54" width="64" height="38" fill="url(#t77-pat-__CID__)"/>' +
+    '<rect x="44" y="66" width="12" height="26" fill="__DOOR__"/>' +
+    '<rect x="24" y="62" width="12" height="10" rx="2" fill="__WINDOW__"/>' +
+    '<rect x="64" y="62" width="12" height="10" rx="2" fill="__WINDOW__"/>',
+
+    // 3 — Prédio (laje reta)
+    '<rect x="10" y="8" width="80" height="84" rx="4" fill="__BODY__"/>' +
+    '<rect x="10" y="8" width="80" height="84" rx="4" fill="url(#t77-pat-__CID__)"/>' +
+    '<rect x="6" y="4" width="88" height="11" rx="3" fill="__ROOF__"/>' +
+    '<g fill="__WINDOW__">' +
+    '<rect x="20" y="24" width="16" height="14" rx="2"/><rect x="42" y="24" width="16" height="14" rx="2"/>' +
+    '<rect x="64" y="24" width="16" height="14" rx="2"/><rect x="20" y="46" width="16" height="14" rx="2"/>' +
+    '<rect x="42" y="46" width="16" height="14" rx="2"/><rect x="64" y="46" width="16" height="14" rx="2"/>' +
+    '</g>' +
+    '<rect x="42" y="70" width="16" height="22" rx="3" fill="__DOOR__"/>',
+
+    // 4 — Castelo
+    '<rect x="6" y="26" width="20" height="66" fill="__ROOF__"/>' +
+    '<rect x="74" y="26" width="20" height="66" fill="__ROOF__"/>' +
+    '<rect x="24" y="44" width="52" height="48" fill="__BODY__"/>' +
+    '<rect x="24" y="44" width="52" height="48" fill="url(#t77-pat-__CID__)"/>' +
+    '<g fill="__ROOF__">' +
+    '<rect x="4" y="18" width="9" height="10"/><rect x="19" y="18" width="9" height="10"/>' +
+    '<rect x="72" y="18" width="9" height="10"/><rect x="87" y="18" width="9" height="10"/>' +
+    '<rect x="22" y="36" width="10" height="10"/><rect x="45" y="36" width="10" height="10"/>' +
+    '<rect x="68" y="36" width="10" height="10"/>' +
+    '</g>' +
+    '<path d="M38 92 v-16 a12 12 0 0 1 24 0 v16 z" fill="__DOOR__"/>',
+
+    // 5 — Torre
+    '<path d="M50 2 L88 30 L12 30 Z" fill="__ROOF__"/>' +
+    '<rect x="26" y="30" width="48" height="62" fill="__BODY__"/>' +
+    '<rect x="26" y="30" width="48" height="62" fill="url(#t77-pat-__CID__)"/>' +
+    '<circle cx="50" cy="50" r="8" fill="__WINDOW__"/>' +
+    '<rect x="43" y="68" width="14" height="24" rx="6" fill="__DOOR__"/>',
+
+    // 6 — Tambor (cilindro)
+    '<rect x="18" y="30" width="64" height="62" rx="10" fill="__BODY__"/>' +
+    '<rect x="18" y="30" width="64" height="62" rx="10" fill="url(#t77-pat-__CID__)"/>' +
+    '<ellipse cx="50" cy="30" rx="32" ry="13" fill="__ROOF__"/>' +
+    '<rect x="30" y="58" width="40" height="6" rx="3" fill="__WINDOW__" opacity="0.8"/>' +
+    '<path d="M40 92 v-14 a10 10 0 0 1 20 0 v14 z" fill="__DOOR__"/>'
+  ];
+
+  var SHAPE_NAMES = ['Chalé', 'Cúpula', 'Pirâmide', 'Prédio', 'Castelo', 'Torre', 'Tambor'];
+
+  function svgFor(shape, color) {
+    var c = COLORS[color % COLORS.length];
+    var base = c.hex;
+    var body = base;
+    var roof = darken(base, 0.34);
+    var door = lighten(base, 0.72);
+    var windowCol = lighten(base, 0.62);
+
+    var markup = SHAPE_PATHS[shape % SHAPE_PATHS.length]
+      .replace(/__ROOF__/g, roof)
+      .replace(/__BODY__/g, body)
+      .replace(/__DOOR__/g, door)
+      .replace(/__WINDOW__/g, windowCol)
+      .replace(/__CID__/g, c.id);
+
+    return '<svg class="house-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" ' +
+      'role="img" aria-hidden="true" focusable="false">' + markup + '</svg>';
+  }
+
+  function cardBg(color) {
+    return mix(COLORS[color % COLORS.length].hex, '#ffffff', 0.9);
+  }
+
+  return {
+    COLORS: COLORS,
+    SHAPE_NAMES: SHAPE_NAMES,
+    defs: defs,
+    svgFor: svgFor,
+    cardBg: cardBg,
+    darken: darken,
+    lighten: lighten,
+    mix: mix
+  };
+});
+
+</script>
+<!-- js/game.js -->
+<script>
+/*
+ * Town 77 (versão web) — interface e controle de turnos.
+ */
+(function () {
+  'use strict';
+
+  var E = window.TownEngine;
+  var AI = window.TownAI;
+  var P = window.TownPieces;
+
+  var $ = function (sel) { return document.querySelector(sel); };
+
+  var DEFAULT_CONFIG = {
+    seats: [
+      { name: 'Você', human: true, difficulty: 'medium' },
+      { name: 'Máquina', human: false, difficulty: 'medium' }
+    ],
+    sound: true
+  };
+
+  var config = loadConfig();
+  var state = null;
+  var cells = [];
+  var selectedTile = null;
+  var hoverCell = null;
+  var aiTimer = null;
+  var audioCtx = null;
+
+  /* ------------------------------------------------------- persistência */
+
+  function loadConfig() {
+    try {
+      var raw = localStorage.getItem('town77.config');
+      if (!raw) return JSON.parse(JSON.stringify(DEFAULT_CONFIG));
+      var parsed = JSON.parse(raw);
+      if (!parsed.seats || !parsed.seats.length) return JSON.parse(JSON.stringify(DEFAULT_CONFIG));
+      return parsed;
+    } catch (err) {
+      return JSON.parse(JSON.stringify(DEFAULT_CONFIG));
+    }
+  }
+
+  function saveConfig() {
+    try { localStorage.setItem('town77.config', JSON.stringify(config)); } catch (err) { /* ignora */ }
+  }
+
+  /* ------------------------------------------------------------- som */
+
+  function sound(kind) {
+    if (!config.sound) return;
+    try {
+      if (!audioCtx) {
+        var Ctx = window.AudioContext || window.webkitAudioContext;
+        if (!Ctx) return;
+        audioCtx = new Ctx();
+      }
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+      var now = audioCtx.currentTime;
+      var notes = { place: [523.25, 659.25], draw: [392], skip: [311.1, 233.1], bad: [174.6], win: [523.25, 659.25, 783.99, 1046.5] }[kind] || [440];
+      notes.forEach(function (freq, i) {
+        var osc = audioCtx.createOscillator();
+        var gain = audioCtx.createGain();
+        osc.type = kind === 'bad' ? 'sawtooth' : 'triangle';
+        osc.frequency.value = freq;
+        var t0 = now + i * 0.085;
+        gain.gain.setValueAtTime(0.0001, t0);
+        gain.gain.exponentialRampToValueAtTime(0.12, t0 + 0.015);
+        gain.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.16);
+        osc.connect(gain).connect(audioCtx.destination);
+        osc.start(t0);
+        osc.stop(t0 + 0.18);
+      });
+    } catch (err) { /* som é opcional */ }
+  }
+
+  /* --------------------------------------------------------- utilidades */
+
+  function difficultyFor(seat) {
+    var cfg = config.seats[seat];
+    return (cfg && cfg.difficulty) || 'medium';
+  }
+
+  function isHumanTurn() {
+    if (!state || state.over) return false;
+    var p = E.activePlayer(state);
+    return !!(p && p.human);
+  }
+
+  function seatClass(seat) { return 'p' + ((seat % 5) + 1); }
+
+  function handCountText(n) { return n === 1 ? '1 peça' : n + ' peças'; }
+
+  /* ------------------------------------------------------------ partida */
+
+  function newGame() {
+    clearTimeout(aiTimer);
+    selectedTile = null;
+    hoverCell = null;
+    state = E.createGame({
+      players: config.seats.map(function (s) {
+        return { name: s.name, human: s.human };
+      }),
+      handSize: 4
+    });
+    buildBoard();
+    render();
+    scheduleAI();
+  }
+
+  function buildBoard() {
+    var board = $('#board');
+    board.innerHTML = '';
+    cells = [];
+    for (var i = 0; i < E.N_TILES; i++) {
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'cell empty';
+      btn.dataset.index = String(i);
+      btn.setAttribute('role', 'gridcell');
+      btn.setAttribute('aria-label', 'casa ' + E.cellLabel(i));
+      board.appendChild(btn);
+      cells.push(btn);
+    }
+  }
+
+  /* ------------------------------------------------------------- render */
+
+  function render() {
+    renderTurn();
+    renderPlayers();
+    renderBoard();
+    renderHand();
+    renderActions();
+    renderLog();
+    $('#fill-count').textContent = E.occupiedCount(state);
+    $('#bag-count').textContent = state.bag.length;
+  }
+
+  function renderTurn() {
+    var line = $('#turn-line');
+    var name = $('#turn-name');
+    var sub = $('#turn-sub');
+    var badge = line.querySelector('.badge');
+
+    if (state.over) {
+      badge.className = 'badge';
+      badge.textContent = '★';
+      name.firstChild.nodeValue = 'Partida encerrada';
+      sub.textContent = 'veja o resultado';
+      return;
+    }
+
+    var p = E.activePlayer(state);
+    badge.className = 'badge ' + seatClass(p.seat);
+    badge.textContent = String(p.seat + 1);
+    name.firstChild.nodeValue = p.name;
+    if (p.human) {
+      sub.textContent = state.phase === 'draw'
+        ? 'sua vez — comprar ou segurar?'
+        : 'sua vez — coloque uma peça';
+    } else {
+      sub.textContent = 'pensando…';
+    }
+  }
+
+  function renderPlayers() {
+    var ul = $('#players');
+    ul.innerHTML = '';
+    state.players.forEach(function (p) {
+      var li = document.createElement('li');
+      if (!state.over && state.turn === p.seat && !p.out) li.classList.add('active');
+      if (p.out) li.classList.add('out');
+
+      var badge = document.createElement('span');
+      badge.className = 'badge ' + seatClass(p.seat);
+      badge.textContent = String(p.seat + 1);
+
+      var nm = document.createElement('span');
+      nm.className = 'p-name';
+      nm.textContent = p.name + (p.human ? '' : ' · IA');
+
+      var meta = document.createElement('span');
+      meta.className = 'p-meta';
+      if (p.out) {
+        meta.textContent = p.outReason === 'finished' ? 'zerou a mão' : 'sem jogada';
+      } else {
+        meta.textContent = 'limite ' + p.limit + ' · ' + p.placed + ' na cidade';
+      }
+
+      var count = document.createElement('span');
+      count.className = 'p-count';
+      count.textContent = String(p.hand.length);
+
+      li.appendChild(badge);
+      li.appendChild(nm);
+      li.appendChild(meta);
+      li.appendChild(count);
+      ul.appendChild(li);
+    });
+  }
+
+  function renderBoard() {
+    var active = state.over ? null : E.activePlayer(state);
+    var selected = selectedTile;
+
+    for (var i = 0; i < E.N_TILES; i++) {
+      var el = cells[i];
+      var tile = state.grid[i];
+      var filled = tile !== null && tile !== undefined;
+
+      if (filled) {
+        if (el.dataset.tile !== String(tile)) {
+          el.innerHTML = P.svgFor(E.shapeOf(tile), E.colorOf(tile));
+          el.dataset.tile = String(tile);
+        }
+        el.classList.add('filled');
+        el.classList.remove('empty', 'legal', 'ghost');
+      } else {
+        if (el.dataset.tile) {
+          el.innerHTML = '';
+          el.dataset.tile = '';
+        }
+        el.classList.add('empty');
+        el.classList.remove('filled');
+      }
+
+      el.classList.toggle('starter', i === 0);
+      el.classList.remove('conflict', 'hl-row', 'hl-col');
+
+      if (!filled) {
+        var legal = false;
+        if (selected !== null && active && active.human && state.phase === 'place') {
+          legal = E.isLegal(state, selected, E.rowOf(i), E.colOf(i));
+        } else if (hoverCell === null) {
+          legal = false;
+        }
+        el.classList.toggle('legal', legal);
+
+        // Fantasma da peça selecionada sobre a casa em foco
+        if (selected !== null && hoverCell === i && legal) {
+          if (el.dataset.ghost !== String(selected)) {
+            el.innerHTML = P.svgFor(E.shapeOf(selected), E.colorOf(selected));
+            el.dataset.ghost = String(selected);
+          }
+          el.classList.add('ghost');
+        } else if (el.dataset.ghost) {
+          el.innerHTML = '';
+          el.dataset.ghost = '';
+          el.classList.remove('ghost');
+        }
+      }
+
+      el.disabled = !el.classList.contains('legal');
+    }
+
+    // Destaques de conflito na linha/coluna da casa em foco
+    if (selected !== null && hoverCell !== null && cells[hoverCell].classList.contains('legal')) {
+      var r = E.rowOf(hoverCell), c = E.colOf(hoverCell);
+      var conflicts = E.conflicts(state, selected, r, c);
+      for (var k = 0; k < 7; k++) {
+        cells[E.idx(r, k)].classList.add('hl-row');
+        cells[E.idx(k, c)].classList.add('hl-col');
+      }
+      conflicts.forEach(function (ci) { cells[ci].classList.add('conflict'); });
+    }
+  }
+
+  function renderHand() {
+    var wrap = $('#hand');
+    wrap.innerHTML = '';
+    var active = state.over ? null : E.activePlayer(state);
+    var showHand = active && active.human;
+
+    $('#hand-hint').textContent = showHand
+      ? 'clique numa peça e depois numa casa'
+      : (state.over ? 'partida encerrada' : 'aguarde a vez da máquina');
+
+    var hand = showHand ? active.hand : (active ? [] : []);
+
+    if (!state.over && !showHand) {
+      var wait = document.createElement('div');
+      wait.className = 'hand-empty';
+      wait.textContent = 'As peças da máquina ficam ocultas — como no jogo de mesa.';
+      wrap.appendChild(wait);
+      return;
+    }
+
+    if (!hand.length) {
+      var empty = document.createElement('div');
+      empty.className = 'hand-empty';
+      empty.textContent = state.over ? 'Sem peças na mão.' : 'Sua mão está vazia.';
+      wrap.appendChild(empty);
+      return;
+    }
+
+    hand.forEach(function (tile, idxInHand) {
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'tile';
+      btn.dataset.tile = String(tile);
+      btn.style.background = P.cardBg(E.colorOf(tile));
+      var legalTiles = E.legalCells(state, tile).length;
+      btn.title = E.tileLabel(tile) + ' · ' +
+        (legalTiles === 0 ? 'não cabe em nenhuma casa agora' : legalTiles + (legalTiles === 1 ? ' casa possível' : ' casas possíveis'));
+      btn.setAttribute('aria-label', btn.title);
+      btn.innerHTML = P.svgFor(E.shapeOf(tile), E.colorOf(tile));
+
+      var kb = document.createElement('span');
+      kb.className = 'kbd';
+      kb.textContent = String(idxInHand + 1);
+      btn.appendChild(kb);
+
+      var legalCount = E.legalCells(state, tile).length;
+      if (legalCount === 0) btn.classList.add('dead');
+      if (selectedTile === tile) btn.classList.add('selected');
+
+      btn.addEventListener('click', function () {
+        if (!isHumanTurn() || state.phase !== 'place') return;
+        if (legalCount === 0) { sound('bad'); return; }
+        selectedTile = (selectedTile === tile) ? null : tile;
+        hoverCell = null;
+        renderBoard();
+        renderHand();
+        renderActions();
+      });
+
+      wrap.appendChild(btn);
+    });
+  }
+
+  function renderActions() {
+    var notice = $('#action-notice');
+    var slots = $('#draw-slots');
+    var autoBtn = $('#btn-auto');
+    notice.className = 'notice';
+
+    slots.hidden = true;
+    autoBtn.disabled = !isHumanTurn();
+
+    if (state.over) {
+      notice.textContent = 'A partida terminou. Veja o resultado.';
+      return;
+    }
+
+    var p = E.activePlayer(state);
+
+    if (!p.human) {
+      notice.textContent = p.name + ' está escolhendo onde construir…';
+      return;
+    }
+
+    if (state.phase === 'draw') {
+      slots.hidden = false;
+      notice.className = 'notice good';
+      notice.textContent = 'Construção feita. Comprar do saco (' + state.bag.length +
+        ' restantes)? Se não comprar, seu limite de mão cai para ' + p.hand.length + ' e não sobe mais.';
+      $('#btn-draw').disabled = !state.canDraw;
+      return;
+    }
+
+    if (selectedTile === null) {
+      var dead = p.hand.filter(function (t) { return E.legalCells(state, t).length === 0; }).length;
+      notice.textContent = dead > 0
+        ? dead + (dead === 1 ? ' peça não cabe' : ' peças não cabem') +
+          ' em nenhuma casa neste momento (podem voltar a caber conforme a cidade cresce). Jogue com as que cabem.'
+        : 'Selecione uma peça da mão para ver onde ela pode ser construída.';
+      if (dead > 0) notice.className = 'notice warn';
+      return;
+    }
+
+    var spots = E.legalCells(state, selectedTile).length;
+    notice.textContent = E.tileLabel(selectedTile) + ': ' + spots +
+      (spots === 1 ? ' casa destacada' : ' casas destacadas') + '. Clique em uma delas.';
+  }
+
+  function renderLog() {
+    var ul = $('#log');
+    ul.innerHTML = '';
+    state.log.slice(-40).forEach(function (entry) {
+      var li = document.createElement('li');
+      li.className = entry.kind;
+      li.textContent = entry.text;
+      ul.appendChild(li);
+    });
+    ul.scrollTop = ul.scrollHeight;
+  }
+
+  function renderLegend() {
+    var legend = $('#legend');
+    legend.innerHTML = '';
+    P.COLORS.forEach(function (c, i) {
+      var span = document.createElement('span');
+      span.innerHTML = '<i style="background:' + c.hex + '"></i>' + E.COLORS[i].name;
+      legend.appendChild(span);
+    });
+  }
+
+  /* --------------------------------------------------------------- IA */
+
+  function scheduleAI() {
+    clearTimeout(aiTimer);
+    if (!state || state.over) return;
+    var p = E.activePlayer(state);
+    if (!p || p.human) return;
+    aiTimer = setTimeout(aiStep, 480);
+  }
+
+  function aiStep() {
+    if (!state || state.over) return;
+    var p = E.activePlayer(state);
+    if (!p || p.human) return;
+
+    if (state.phase === 'place') {
+      var move = AI.chooseMove(state, difficultyFor(p.seat));
+      if (!move) {
+        E.beginTurn(state);
+      } else {
+        var res = E.place(state, move.tile, E.rowOf(move.cell), E.colOf(move.cell));
+        if (res.ok) sound('place');
+      }
+    } else if (state.phase === 'draw') {
+      var wantDraw = AI.chooseDraw(state, difficultyFor(p.seat));
+      var out = E.drawOrSkip(state, wantDraw);
+      if (out.ok) sound(wantDraw ? 'draw' : 'skip');
+    }
+
+    selectedTile = null;
+    render();
+    if (checkOver()) return;
+    scheduleAI();
+  }
+
+  /* ------------------------------------------------------ fim de partida */
+
+  function checkOver() {
+    if (!state.over) return false;
+    showOverModal();
+    return true;
+  }
+
+  function showOverModal() {
+    var ranking = state.ranking.length ? state.ranking : E.ranking(state);
+    var ul = $('#ranking');
+    ul.innerHTML = '';
+    var top = ranking[0];
+
+    ranking.forEach(function (row, i) {
+      var li = document.createElement('li');
+      if (i === 0 && row.handLeft === top.handLeft && row.lastOrder === top.lastOrder) li.classList.add('winner');
+      var pos = document.createElement('span');
+      pos.className = 'pos';
+      pos.textContent = String(i + 1) + '.';
+      var nm = document.createElement('span');
+      nm.className = 'r-name';
+      nm.textContent = row.name + (row.human ? '' : ' · IA');
+      var meta = document.createElement('span');
+      meta.className = 'r-meta';
+      meta.textContent = handCountText(row.handLeft) + ' na mão · ' + row.placed + ' construídas';
+      li.appendChild(pos); li.appendChild(nm); li.appendChild(meta);
+      ul.appendChild(li);
+    });
+
+    var solo = state.players.length === 1;
+    $('#over-title').textContent = solo ? 'Fim de jogo' : 'Fim de jogo';
+    $('#over-sub').textContent = solo
+      ? 'Você terminou com ' + handCountText(top.handLeft) + ' na mão.'
+      : 'Vence quem tiver menos peças na mão — ' + top.name + ' com ' + handCountText(top.handLeft) + '.';
+    $('#modal-over').hidden = false;
+    sound('win');
+  }
+
+  /* ------------------------------------------------------------- ações */
+
+  function humanPlace(cellIndex) {
+    if (!isHumanTurn() || state.phase !== 'place' || selectedTile === null) return;
+    var r = E.rowOf(cellIndex), c = E.colOf(cellIndex);
+    if (!E.isLegal(state, selectedTile, r, c)) { sound('bad'); return; }
+    var tile = selectedTile;
+    var res = E.place(state, tile, r, c);
+    if (!res.ok) { sound('bad'); return; }
+    sound('place');
+    selectedTile = null;
+    hoverCell = null;
+    render();
+    if (checkOver()) return;
+    scheduleAI();
+  }
+
+  function humanDraw(wantDraw) {
+    if (!isHumanTurn() || state.phase !== 'draw') return;
+    var res = E.drawOrSkip(state, wantDraw);
+    if (!res.ok) return;
+    sound(wantDraw ? 'draw' : 'skip');
+    render();
+    if (checkOver()) return;
+    scheduleAI();
+  }
+
+  function autoPlayReal() {
+    if (!isHumanTurn()) return;
+    if (state.phase === 'draw') { humanDraw(AI.chooseDraw(state, 'hard')); return; }
+    var move = AI.chooseMove(state, 'hard');
+    if (!move) return;
+    selectedTile = move.tile;
+    humanPlace(move.cell);
+  }
+
+  /* --------------------------------------------------------- eventos */
+
+  function bindEvents() {
+    $('#board').addEventListener('click', function (ev) {
+      var cell = ev.target.closest('.cell');
+      if (!cell) return;
+      humanPlace(Number(cell.dataset.index));
+    });
+
+    $('#board').addEventListener('mouseover', function (ev) {
+      var cell = ev.target.closest('.cell');
+      if (!cell) return;
+      var i = Number(cell.dataset.index);
+      if (hoverCell === i) return;
+      hoverCell = i;
+      renderBoard();
+    });
+
+    $('#board').addEventListener('mouseleave', function () {
+      if (hoverCell !== null) { hoverCell = null; renderBoard(); }
+    });
+
+    $('#btn-draw').addEventListener('click', function () { humanDraw(true); });
+    $('#btn-skip').addEventListener('click', function () { humanDraw(false); });
+    $('#btn-auto').addEventListener('click', autoPlayReal);
+
+    $('#btn-rules').addEventListener('click', function () { $('#modal-rules').hidden = false; });
+    $('#modal-rules').addEventListener('click', function (ev) {
+      if (ev.target.id === 'modal-rules' || ev.target.hasAttribute('data-close')) $('#modal-rules').hidden = true;
+    });
+
+    $('#btn-setup').addEventListener('click', openSetup);
+    $('#modal-setup').addEventListener('click', function (ev) {
+      if (ev.target.id === 'modal-setup' || ev.target.hasAttribute('data-close')) $('#modal-setup').hidden = true;
+    });
+    $('#btn-over-setup').addEventListener('click', function () {
+      $('#modal-over').hidden = true;
+      openSetup();
+    });
+    $('#btn-again').addEventListener('click', function () {
+      $('#modal-over').hidden = true;
+      newGame();
+    });
+
+    $('#btn-sound').addEventListener('click', function () {
+      config.sound = !config.sound;
+      saveConfig();
+      updateSoundButton();
+      if (config.sound) sound('place');
+    });
+
+    $('#player-count').addEventListener('change', function () {
+      renderSeatConfig(Number(this.value));
+    });
+
+    $('#seat-config').addEventListener('change', function () {
+      collectSeatConfig();
+    });
+
+    $('#btn-start').addEventListener('click', function () {
+      collectSeatConfig();
+      saveConfig();
+      $('#modal-setup').hidden = true;
+      newGame();
+    });
+
+    document.addEventListener('keydown', function (ev) {
+      if (ev.target.tagName === 'INPUT' || ev.target.tagName === 'SELECT') return;
+      if (ev.key === 'Escape') {
+        selectedTile = null;
+        hoverCell = null;
+        renderBoard(); renderHand(); renderActions();
+        return;
+      }
+      if (/^[1-7]$/.test(ev.key) && isHumanTurn() && state.phase === 'place') {
+        var p = E.activePlayer(state);
+        var tile = p.hand[Number(ev.key) - 1];
+        if (tile === undefined) return;
+        if (E.legalCells(state, tile).length === 0) { sound('bad'); return; }
+        selectedTile = (selectedTile === tile) ? null : tile;
+        hoverCell = null;
+        renderBoard(); renderHand(); renderActions();
+      }
+      if (ev.key === 'Enter' && isHumanTurn() && state.phase === 'draw') {
+        if (state.canDraw) humanDraw(true); else humanDraw(false);
+      }
+    });
+  }
+
+  /* -------------------------------------------------------------- setup */
+
+  function renderSeatConfig(count) {
+    var wrap = $('#seat-config');
+    var prev = config.seats.slice();
+    wrap.innerHTML = '';
+
+    for (var i = 0; i < count; i++) {
+      var old = prev[i] || {};
+      var row = document.createElement('div');
+      row.className = 'seat-row';
+
+      var badge = document.createElement('span');
+      badge.className = 'badge ' + seatClass(i);
+      badge.textContent = String(i + 1);
+
+      var name = document.createElement('input');
+      name.type = 'text';
+      name.value = old.name || (i === 0 ? (count === 1 ? 'Você' : 'Jogador 1') : 'Jogador ' + (i + 1));
+      name.dataset.role = 'name';
+      name.maxLength = 14;
+
+      var type = document.createElement('select');
+      type.dataset.role = 'type';
+      [['human', 'Humano'], ['ai', 'Máquina']].forEach(function (opt) {
+        var o = document.createElement('option');
+        o.value = opt[0];
+        o.textContent = opt[1];
+        type.appendChild(o);
+      });
+      var wasHuman = old.human !== undefined ? old.human : (i === 0);
+      type.value = wasHuman ? 'human' : 'ai';
+
+      var diff = document.createElement('select');
+      diff.dataset.role = 'difficulty';
+      [['easy', 'IA fácil'], ['medium', 'IA média'], ['hard', 'IA difícil']].forEach(function (opt) {
+        var o = document.createElement('option');
+        o.value = opt[0];
+        o.textContent = opt[1];
+        diff.appendChild(o);
+      });
+      diff.value = old.difficulty || 'medium';
+      diff.disabled = type.value === 'human';
+
+      type.addEventListener('change', function () {
+        diff.disabled = this.value === 'human';
+      });
+
+      row.appendChild(badge);
+      row.appendChild(name);
+      row.appendChild(type);
+      row.appendChild(diff);
+      wrap.appendChild(row);
+    }
+  }
+
+  function collectSeatConfig() {
+    var rows = $('#seat-config').querySelectorAll('.seat-row');
+    var seats = [];
+    rows.forEach(function (row) {
+      var name = row.querySelector('[data-role="name"]').value.trim();
+      var type = row.querySelector('[data-role="type"]').value;
+      var diff = row.querySelector('[data-role="difficulty"]').value;
+      seats.push({
+        name: name || ('Jogador ' + (seats.length + 1)),
+        human: type === 'human',
+        difficulty: diff
+      });
+    });
+    config.seats = seats;
+  }
+
+  function openSetup() {
+    var count = Math.min(5, Math.max(1, config.seats.length || 2));
+    $('#player-count').value = String(count);
+    renderSeatConfig(count);
+    $('#modal-setup').hidden = false;
+  }
+
+  function updateSoundButton() {
+    var btn = $('#btn-sound');
+    btn.textContent = 'Som: ' + (config.sound ? 'ligado' : 'desligado');
+    btn.setAttribute('aria-pressed', config.sound ? 'true' : 'false');
+  }
+
+  /* --------------------------------------------------------------- init */
+
+  function init() {
+    $('#svg-defs').innerHTML = P.defs();
+    renderLegend();
+    bindEvents();
+    updateSoundButton();
+    newGame();
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+})();
+
+</script>
+</body>
+</html>

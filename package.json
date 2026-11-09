@@ -1,0 +1,13 @@
+{
+  "name": "town77-web",
+  "version": "1.0.0",
+  "description": "Adaptação não oficial do jogo de tabuleiro Town 77 (Oink Games) para navegador, em HTML, CSS e JavaScript puros.",
+  "private": false,
+  "license": "MIT",
+  "keywords": ["jogo", "board-game", "town-77", "oink-games", "vanilla-js", "puzzle", "svg"],
+  "scripts": {
+    "test": "node tests/engine.test.js",
+    "tune": "node tools/tune.mjs 600",
+    "serve": "python3 -m http.server 8000"
+  }
+}
