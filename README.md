@@ -2,6 +2,8 @@
 
 [![testes](https://github.com/Jushirambo/town77-web/actions/workflows/test.yml/badge.svg)](https://github.com/Jushirambo/town77-web/actions/workflows/test.yml)
 
+### ▶️ Jogue agora: **https://jushirambo.github.io/town77-web/**
+
 Adaptação **não oficial**, feita do zero em HTML, CSS e JavaScript puros (sem build, sem dependências),
 do jogo de tabuleiro **Town 77** da Oink Games.
 
@@ -12,7 +14,9 @@ do jogo de tabuleiro **Town 77** da Oink Games.
 
 ## Jogar
 
-Abra o `index.html` no navegador — é só isso. Não precisa instalar nada.
+**Online:** https://jushirambo.github.io/town77-web/ (GitHub Pages)
+
+**Local:** abra o `index.html` no navegador — é só isso. Não precisa instalar nada.
 
 Se quiser um único arquivo (para abrir direto do disco, mandar por e-mail ou publicar como página
 única), abra **`town77-standalone.html`**: ele traz CSS e JS embutidos. Para regerar depois de
