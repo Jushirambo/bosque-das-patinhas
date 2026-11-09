@@ -1,5 +1,7 @@
 # Town 77 — versão jogável no navegador
 
+[![testes](https://github.com/Jushirambo/town77-web/actions/workflows/test.yml/badge.svg)](https://github.com/Jushirambo/town77-web/actions/workflows/test.yml)
+
 Adaptação **não oficial**, feita do zero em HTML, CSS e JavaScript puros (sem build, sem dependências),
 do jogo de tabuleiro **Town 77** da Oink Games.
 
