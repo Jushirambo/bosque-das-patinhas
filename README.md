@@ -58,7 +58,7 @@ js/ai.js              IA com três níveis, calibrada por simulação
 js/pieces.js          arte vetorial das 49 peças (SVG gerado em tempo de execução)
 js/game.js            interface: renderização, eventos, animação de turnos
 tests/engine.test.js  testes do motor + simulações completas (~160 partidas)
-tools/ci-workflow.yml.example  workflow de CI pronto, com instruções para ativar
+.github/workflows/test.yml  CI: roda os testes do motor a cada push e pull request
 tools/tune.mjs        script de calibração da IA por torneio de variantes
 ```
 
@@ -70,6 +70,9 @@ Node (`require`), o que permite testar as regras sem navegador.
 ```bash
 npm test          # ou: node tests/engine.test.js
 ```
+
+O mesmo teste roda automaticamente no GitHub Actions (`.github/workflows/test.yml`) a cada push na
+`main` e em cada pull request.
 
 Os testes cobrem: unicidade das 49 peças, distribuição inicial, restrições de linha/coluna,
 vizinhança, compra/limite de mão, eliminações, desempate e — o mais importante — **simulações de
